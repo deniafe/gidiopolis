@@ -145,7 +145,7 @@ const Navbar = () => {
                   <a
                     className="active disabled:text-black/30 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
                     aria-current="page"
-                    href="#"
+                    href="https://gidiopolis.com/?page_id=30"
                     data-te-nav-link-ref
                   >
                     About
