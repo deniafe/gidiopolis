@@ -95,7 +95,7 @@ const Navbar = () => {
             <div className="md:flex md:flex-row items-center">
 
               {/* Dropdown */}
-              <div className="relative ml-2 text-sm items-center" data-te-dropdown-ref>
+              <div className="relative ml-2 text-sm font-medium items-center" data-te-dropdown-ref>
                 <a
                   className="flex items-center px-6 pb-2 pt-2.5 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
                   href="#"
@@ -139,7 +139,7 @@ const Navbar = () => {
                 </ul>
               </div>
 
-              <ul className="list-none text-sm mr-auto pl-6 flex flex-col md:pl-0 lg:mt-1 lg:flex-row" data-te-navbar-nav-ref>
+              <ul className="list-none text-sm font-medium mr-auto pl-6 flex flex-col md:pl-0 lg:mt-1 lg:flex-row" data-te-navbar-nav-ref>
                 {/* Home link */}
                 <li className="my-4 pl-2 lg:my-0 lg:pl-2 lg:pr-1" data-te-nav-item-ref>
                   <a
@@ -194,6 +194,7 @@ const Navbar = () => {
                   <PrimaryButton onClick={handleButtonClick}>Sign up</PrimaryButton>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
