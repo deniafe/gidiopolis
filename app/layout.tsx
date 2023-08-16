@@ -2,9 +2,9 @@ import "tw-elements/dist/css/tw-elements.min.css";
 import './globals.css'
 import { Inter } from 'next/font/google'
 import dynamic from 'next/dynamic'
-import Footer from '../components/layout/Footer'
-import Navbar from '../components/layout/Navbar'
-import AuthModal from "@/components/layout/AuthModal";
+import Footer from '../components/global/Footer'
+import Navbar from '../components/global/Navbar'
+import SignupModal from "@/components/global/SignupModal";
 
 // const Navbar = dynamic(() => import('../components/layout/Navbar'), { ssr: false })
 
@@ -26,7 +26,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-        <AuthModal />
+        <SignupModal />
       </body>
     </html>
   )

@@ -1,6 +1,6 @@
 "use client";
 import React from 'react'
-import PrimaryButton from '../global/PrimaryButton'
+import PrimaryButton from './PrimaryButton'
 
 const SignupForm = () => {
 
@@ -47,31 +47,31 @@ const SignupForm = () => {
 
             {/* Divider */}
             <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
-                <p className="mx-4 mb-0 text-center font-light text-sm dark:text-neutral-200">
-                  OR Sign In With Email
-                </p>
-              </div>
+              <p className="mx-4 mb-0 text-center font-light text-sm dark:text-neutral-200">
+                OR Sign In With Email
+              </p>
+            </div>
 
             <form>
               {/* Email input */}
-              <div className="relative mb-2 pt-4">
+              <div className="mb-2 pt-4">
                 <small>Email Address</small>
                 <input
                   type="email"
-                  className="bg-white text-gray-800 peer block min-h-[auto] w-full rounded-full bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-my-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                  className="bg-blue-50 text-gray-800 peer block min-h-[auto] w-full rounded-full px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-my-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                   id="exampleFormControlInput1"
                   placeholder="Email address"
                   />
               </div>
 
               {/* Password input */}
-              <div className="relative mb-4">
-              <small>Password</small>
-              <input
-                type="password"
-                className="bg-white text-gray-800 peer block min-h-[auto] w-full rounded-full bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-my-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                placeholder="Email address"
-                />
+              <div className="mb-4">
+                <small>Password</small>
+                <input
+                  type="password"
+                  className="bg-blue-50 text-gray-800 peer block min-h-[auto] w-full rounded-full px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-my-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                  placeholder="Email address"
+                  />
               </div>
 
               {/* Remember me checkbox */}

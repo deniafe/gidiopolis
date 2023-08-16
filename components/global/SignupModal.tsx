@@ -1,7 +1,7 @@
 import React from 'react';
 import SignupForm from './SignupForm';
 
-const AuthModal = () => {
+const SignupModal = () => {
   return (
     <div
       data-te-modal-init
@@ -40,4 +40,4 @@ const AuthModal = () => {
   );
 };
 
-export default AuthModal;
+export default SignupModal;

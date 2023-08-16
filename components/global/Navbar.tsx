@@ -2,10 +2,10 @@
 import Image from 'next/image'
 import { useEffect } from "react";
 import { Logo } from '../icons/Logo';
-import PrimaryButton from '../global/PrimaryButton';
-import TextButton from '../global/TextButton';
+import PrimaryButton from './PrimaryButton';
+import TextButton from './TextButton';
 import { categories } from '@/utils/constants';
-import AuthModal from './AuthModal';
+import AuthModal from './SignupModal';
 
 
 const Navbar = () => {
