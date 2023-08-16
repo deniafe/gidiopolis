@@ -109,16 +109,6 @@ const SignupForm = () => {
               >
                 Sign in
               </div>
-
-              {/* <!-- Register link --> */}
-            {/* <p className="mb-0 mt-4 pt-1 text-sm text-center">
-             {" Don't have an account?"}
-              <a
-                href="#!"
-                className="text-my-primary ml-2 transition duration-150 ease-in-out hover:text-cyan-700 focus:text-cyan-700 active:text-cyan-700"
-                >Register</a
-              >
-            </p> */}
              
             </form>
           </div>

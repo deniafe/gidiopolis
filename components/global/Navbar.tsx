@@ -95,7 +95,7 @@ const Navbar = () => {
             <div className="md:flex md:flex-row items-center">
 
               {/* Dropdown */}
-              <div className="relative ml-2 text-sm font-medium items-center" data-te-dropdown-ref>
+              <div className="relative ml-2 mr-2 text-sm font-medium items-center" data-te-dropdown-ref>
                 <a
                   className="flex items-center px-6 pb-2 pt-2.5 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
                   href="#"
@@ -173,9 +173,7 @@ const Navbar = () => {
                 </li>
               </ul>
 
-              <div 
-              
-              className="flex">
+              <div className="flex">
                 <div
                    data-te-toggle="modal"
                    data-te-target="#authModal"
