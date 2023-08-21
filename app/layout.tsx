@@ -12,10 +12,10 @@ import Head from 'next/head'
 import { ResetModal } from '@/components/global/ResetPasswordModal'
 import CreateEventModal from '@/components/event/CreateEventModal'
 
-export const metadata = {
-  title: 'Gidiopolis',
-  description: 'Search For Events In Your City',
-}
+// export const metadata = {
+//   title: 'Gidiopolis',
+//   description: 'Search For Events In Your City',
+// }
 
 export default function RootLayout({
   children,
