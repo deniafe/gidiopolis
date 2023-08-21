@@ -29,6 +29,9 @@ export const categories = [
   }
 ];
 
+export const catexts = [  'Arts & Culture',  'Night Life',  'Public Sector & Policy',  'Business & Economy',  'Religious',  'IT/Tech',  'Others']
+
+
 
 export const links = [
   {
@@ -74,4 +77,44 @@ export const where = [
 export const cost = [
   'Free',
   'Paid'
+]
+
+export const states = [
+  "Online",
+  "Abia",
+  "Adamawa",
+  "Akwa Ibom",
+  "Anambra",
+  "Bauchi",
+  "Bayelsa",
+  "Benue",
+  "Borno",
+  "Cross River",
+  "Delta",
+  "Ebonyi",
+  "Edo",
+  "Ekiti",
+  "Enugu",
+  "Gombe",
+  "Imo",
+  "Jigawa",
+  "Kaduna",
+  "Kano",
+  "Katsina",
+  "Kebbi",
+  "Kogi",
+  "Kwara",
+  "Lagos",
+  "Nassarawa",
+  "Niger",
+  "Ogun",
+  "Ondo",
+  "Osun",
+  "Oyo",
+  "Plateau",
+  "Rivers",
+  "Sokoto",
+  "Taraba",
+  "Yobe",
+  "Zamfara"
 ]

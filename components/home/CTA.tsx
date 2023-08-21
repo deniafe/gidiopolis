@@ -1,8 +1,9 @@
 import React from 'react'
-import EventCard from './EventCard'
+import { useAuthContext } from "@/context/AuthContext";
 import PrimaryButton from '../global/PrimaryButton'
 
 const CTA = () => {
+  const { user } = useAuthContext()
 
   const handleButtonClick = (event: React.MouseEvent<HTMLDivElement>) => {
     console.log("Button clicked from parent component!");
@@ -23,14 +24,37 @@ const CTA = () => {
           <p className="mb-6 text-center md:text-left">
           Ready to showcase your amazing upcoming event to a diverse and engaged audience? Submit your event to our platform
           </p>
-          <div className="flex justify-center md:justify-start">
-            <PrimaryButton onClick={handleButtonClick}>
-              <div className=" px-[2rem] md:px-[4rem] text-lg">Submit Event</div>
-            </PrimaryButton>
-          </div>
+
+          {
+            user ?
+            (
+              <a 
+                href='/create-event'  
+                className="flex justify-center md:justify-start"
+                >
+                <PrimaryButton onClick={handleButtonClick}>
+                  <div className=" px-[2rem] md:px-[4rem] text-lg">Submit Event</div>
+                </PrimaryButton>
+              </a>
+              
+            ) :
+
+            (
+              <div  
+                className="flex justify-center md:justify-start"
+                data-te-toggle="modal"
+                data-te-target="#signinModal"
+                data-te-ripple-init
+                data-te-ripple-color="light"
+                >
+                <PrimaryButton onClick={handleButtonClick}>
+                  <div className=" px-[2rem] md:px-[4rem] text-lg">Submit Event</div>
+                </PrimaryButton>
+              </div>
+            )
+          }
           
         </div>
-
         <div className="flex relative justify-center">
         <div className="hidden md:block absolute top-[2rem] left-[3rem] h-8 w-8 rounded-lg bg-cyan-400"></div>
           <div className="hidden md:block absolute top-[4rem] left-[5rem] h-12 w-12 rounded-xl bg-my-primary"></div>

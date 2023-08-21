@@ -1,29 +1,44 @@
 "use client";
+import { Spinner } from '@/components/global/Loading';
 import CTA from '@/components/home/CTA';
 import Categories from '@/components/home/Categories';
 import Hero from '@/components/home/Hero';
 import LatestEvent from '@/components/home/LatestEvents';
 import MoreEvent from '@/components/home/MoreEvents';
-import Image from 'next/image'
-import { useEffect } from "react";
+import { FirebaseEvent, getEvents } from '@/firebase/firestore/get_data';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
 
+  const [firebaseEvents, setFirebaseEvents] = useState<FirebaseEvent[]>();
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const init = async () => {
-      const { Datepicker, Input, initTE } = await import("tw-elements");
-      initTE({ Datepicker, Input });
-    };
-    init();
+    getEvents(setFirebaseEvents, setLoading)
   }, []);
 
   return (
     <main className="bg-white md:pt-32 md:px-[2rem]">
+
       <Hero />
       <Categories />
-      <LatestEvent />
-      <MoreEvent />
-      <CTA />
+
+      {loading ? 
+        <div
+        className="text-my-primary"
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+        >
+          <Spinner />
+        </div>
+        : 
+        (
+        <>
+          <LatestEvent firebaseEvents={firebaseEvents} />
+          <MoreEvent firebaseEvents={firebaseEvents} />
+          <CTA />
+        </>
+        )
+      }
       {/* <div
         className="relative mb-3"
         data-te-datepicker-init

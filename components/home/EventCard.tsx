@@ -1,17 +1,35 @@
+'use client'
+import { cutOffLongStrings, formatDate } from '@/utils/func';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { ReactNode } from 'react';
+import { Timestamp } from 'firebase/firestore';
 
 interface ReusableCardProps {
+  id: string;
+  slug: string;
   imageUrl: string;
   title: string;
-  date: string;
+  date: Timestamp;
+  time: string;
   venue: string;
-  isFree: boolean;
+  state: string;
+  isFree: string;
   organizer: string;
 }
 
-const EventCard: React.FC<ReusableCardProps> = ({ imageUrl, title, date, venue, isFree, organizer }) => {
+const EventCard: React.FC<ReusableCardProps> = ({ id, slug, imageUrl, title, date, time, venue, state, isFree, organizer }) => {
+
+  // const router = useRouter();
+
+  // const handleRoute = (slug: string, id: string) =>
+	// 	router.push({ pathname: `/e/${id}/${slug}` });
+
   return (
-    <div className="block cursor-pointer rounded w-[17rem] bg-white transition-shadow hover:shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
+    <Link
+    href={`/e/${id}/${slug}`}
+    //  onClick={() => handleRoute(slug, id)}
+      className="block cursor-pointer rounded w-[17rem] bg-white transition-shadow hover:shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
       <div className="relative overflow-hidden bg-cover bg-no-repeat" data-te-ripple-init data-te-ripple-color="light">
         <img className="rounded-t w-full h-32 object-cover" src={imageUrl} alt="" />
         <a href="#!">
@@ -20,25 +38,25 @@ const EventCard: React.FC<ReusableCardProps> = ({ imageUrl, title, date, venue, 
       </div>
       <div className="px-3 py-8">
         <h5 className="mb-2 text-lg font-bold leading-tight text-neutral-800 dark:text-neutral-50">
-          {title}
+          {cutOffLongStrings(title)}
         </h5>
         <p className="mb-2 text-sm font-medium text-neutral-400 dark:text-neutral-200">
-          {date}
+          {formatDate(date)}, {time}
         </p>
         <p className="mb-2 text-sm text-neutral-600 dark:text-neutral-200">
-          {venue}
+          {venue}, {state}
         </p>
         <p 
         className="mb-2 w-10 rounded text-center text-white text-xs dark:text-neutral-200"
-        style={{background: isFree ? '#31859C' : '#77933C'}}
+        style={{background: isFree === 'free' ? '#31859C' : '#77933C'}}
         >
-          {isFree ? "Free" : "Paid"}
+          {isFree === 'free' ? "Free" : "Paid"}
         </p>
         <h6 className="mb-2 text-base font-medium leading-tight text-neutral-800 dark:text-neutral-50">
-          {organizer}
+          {cutOffLongStrings(organizer)}
         </h6>
       </div>
-    </div>
+    </Link>
   )
 }
 

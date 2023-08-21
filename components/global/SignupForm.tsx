@@ -1,39 +1,105 @@
 "use client";
-import React from 'react'
-import PrimaryButton from './PrimaryButton'
+import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { signInWithGooglePopup, signUp } from '@/firebase/auth/signup';
+import { errorMessage } from '@/firebase/error_message';
+import validator from 'validator'
+import { Loading } from './Loading';
+import { createUserDocumentFromAuth } from '@/firebase/auth/create_user';
+import { User } from 'firebase/auth';
 
 const SignupForm = () => {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleButtonClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    console.log("Button clicked from parent component!");
-    // Additional logic or state changes can be performed here
+  const closeModal = async () => {
+    const { Modal } = await import("tw-elements")
+    const myModal = Modal.getInstance(document.getElementById("signupModal"))
+    setLoading(false)
+    return myModal.hide()
+  }
+
+  const signUpWithGoogle = async () => {
+    const { user } = await signInWithGooglePopup();
+    const data = await createUserDocumentFromAuth(user)
+    const docError = data?.error
+
+    if (docError) {
+      setLoading(false)
+      return console.log(docError)
+    }
+
+    return closeModal()
   };
+
+  const signUpWithEmail = async (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault()
+
+    if(loading) return
+
+    if(!email || !password || !name) {
+      return errorMessage('Please enter your name, email and password to sign up')
+    }
+
+    if (!validator.isEmail(email)) {
+      return errorMessage('Email not valid')
+    } 
+
+    if (password.length < 6) {
+      return errorMessage('Passord not valid')
+    } 
+
+    if (name.length < 2) {
+      return errorMessage('Name too short')
+    } 
+
+    setLoading(true)
+
+    const { user, error } = await signUp(email, password)
+
+    if (error) {
+      setLoading(false)
+      return console.log(error)
+    }
+
+    const data = await createUserDocumentFromAuth(user, { displayName: name })
+    const docError = data?.error
+
+    if (docError) {
+      setLoading(false)
+      return console.log(docError)
+    }
+
+    setLoading(false)
+
+    return closeModal()
+  }
 
   return (
     <section
       className="mb-8 md:mb-8 md:min-h-screen"
     >
       
-      <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mt-8 px-[2rem]">
+      <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mt-2 px-[2rem]">
 
         <div className="md:px-[2rem] mb-12 md:mb-0" >
           <h2 className="text-center  text-[1.75rem] text-black font-medium mb-4 ">
-            Sign In To Gidiopolis
+            Sign Up To Gidiopolis
           </h2>
           {/* <p className="mb-6 text-center md:text-left">
           Ready to showcase your amazing upcoming event to a diverse and engaged audience? Submit your event to our platform
           </p> */}
 
           <div className="mt-8">
-
-
              {/* Social login buttons */}
              <a
                 className="mb-3 flex w-full items-center justify-center rounded-full border-2 border-primary-100 px-7 pb-2.5 pt-3 text-center text-sm font-medium uppercase leading-normal text-black transition duration-150 ease-in-out hover:border-primary-accent-100 hover:bg-neutral-500 hover:bg-opacity-10 focus:border-primary-accent-100 focus:outline-none focus:ring-0 active:border-primary-accent-200 "
-                href="#!"
                 role="button"
                 data-te-ripple-init
                 data-te-ripple-color="light"
+                onClick={signUpWithGoogle}
               >
                 {/* Google */}
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" role="img" className='mr-2'>
@@ -42,22 +108,35 @@ const SignupForm = () => {
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M3.96409 10.7098C3.78409 10.1698 3.68182 9.59301 3.68182 8.99983C3.68182 8.40664 3.78409 7.82983 3.96409 7.28983V4.95801H0.957273C0.347727 6.17301 0 7.54755 0 8.99983C0 10.4521 0.347727 11.8266 0.957273 13.0416L3.96409 10.7098Z" fill="#FBBC05"></path>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M8.99976 3.57955C10.3211 3.57955 11.5075 4.03364 12.4402 4.92545L15.0216 2.34409C13.4629 0.891818 11.4257 0 8.99976 0C5.48158 0 2.43794 2.01682 0.957031 4.95818L3.96385 7.29C4.67158 5.16273 6.65567 3.57955 8.99976 3.57955Z" fill="#EA4335"></path>
                 </svg>
-                Sign In With Google
+                Sign Up With Google
               </a>
 
             {/* Divider */}
             <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
               <p className="mx-4 mb-0 text-center font-light text-sm dark:text-neutral-200">
-                OR Sign In With Email
+                OR Sign Up With Email
               </p>
             </div>
 
             <form>
+               {/* Name input */}
+               <div className="mb-2 pt-1">
+                <small>Name</small>
+                <input
+                  type="text"
+                  onChange={(e) => setName(e.target.value)}
+                  className="bg-blue-50 text-gray-800 peer block min-h-[auto] w-full rounded-full px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-my-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                  id="exampleFormControlInput1"
+                  placeholder="Name"
+                  />
+              </div>
+
               {/* Email input */}
-              <div className="mb-2 pt-4">
+              <div className="mb-2">
                 <small>Email Address</small>
                 <input
                   type="email"
+                  onChange={(e) => setEmail(e.target.value)}
                   className="bg-blue-50 text-gray-800 peer block min-h-[auto] w-full rounded-full px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-my-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                   id="exampleFormControlInput1"
                   placeholder="Email address"
@@ -69,6 +148,7 @@ const SignupForm = () => {
                 <small>Password</small>
                 <input
                   type="password"
+                  onChange={(e) => setPassword(e.target.value)}
                   className="bg-blue-50 text-gray-800 peer block min-h-[auto] w-full rounded-full px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-my-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                   placeholder="Email address"
                   />
@@ -85,29 +165,47 @@ const SignupForm = () => {
                     defaultChecked
                   />
                   <label
-                    className="inline-block pl-[0.15rem] hover:cursor-pointer"
+                    className="inline-block pl-[0.15rem] text-xs hover:cursor-pointer"
                     htmlFor="exampleCheck3"
                   >
-                    Remember me
+                   I agree with Gidiopolis Terms of service and privacy policy
                   </label>
                 </div>
-
-                {/* Forgot password link */}
-                <a
-                  href="#!"
-                  className="text-my-primary transition duration-150 ease-in-out hover:text-cyan-600 focus:text-cyan-600 active:text-cyan-700 dark:text-primary-400 dark:hover:text-primary-500 dark:focus:text-primary-500 dark:active:text-primary-600"
-                >
-                  Forgot password?
-                </a>
               </div>
 
               {/* Submit button */}
               <div
+                onClick={signUpWithEmail}
                 className="inline-block text-center cursor-pointer w-full rounded-full bg-my-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#31859C] transition duration-150 ease-in-out hover:bg-cyan-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-cyan-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-cyan-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                 data-te-ripple-init
                 data-te-ripple-color="light"
               >
-                Sign in
+
+                {
+                  loading ?
+                  (<Loading />) :
+                  (
+                    <span>
+                      Sign Up
+                    </span>
+                  )
+                }
+              </div>
+
+              {/* Don't have an account? Signup link */}
+              <div className='mt-2 text-center' >{"Already have an account?"}
+                <span className='ml-2' >
+                <a
+                  data-te-toggle="modal"
+                  data-te-target="#signinModal"
+                  data-te-ripple-init
+                  data-te-ripple-color="light"
+                  className="text-my-primary cursor-pointer transition duration-150 ease-in-out hover:text-cyan-600 focus:text-cyan-600 active:text-cyan-700 dark:text-primary-400 dark:hover:text-primary-500 dark:focus:text-primary-500 dark:active:text-primary-600"
+                  onClick={closeModal}
+                >
+                  Sign In
+                </a>
+                </span> 
               </div>
              
             </form>

@@ -1,8 +1,74 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SearchInput from './SearchInput';
 import SearchOptions from './SearchOptions';
+import { SearchParameters, buildSearchURL } from '@/utils/func';
 
 const SearchModal = () => {
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('')
+  const [when, setWhen] = useState('')
+  const [where, setWhere] = useState('')
+  const [price, setPrice] = useState('')
+  const [searchUrl, setSearchUrl] = useState('/')
+
+  let urlOptions: SearchParameters = {}
+
+  const handleQuery = (query: string) => {
+    setQuery(query)
+    urlOptions.query = query
+    urlOptions.category = category
+    urlOptions.date = when
+    urlOptions.venue = where
+    urlOptions.price = price
+    setSearchUrl(buildSearchURL(urlOptions))
+  }
+
+  const handleCategory = (category: string) => {
+    setCategory(category)
+    urlOptions.query = query
+    urlOptions.category = category
+    urlOptions.date = when
+    urlOptions.venue = where
+    urlOptions.price = price
+    setSearchUrl(buildSearchURL(urlOptions))
+  }
+
+  const handleWhen = (when: string) => {
+    setWhen(when)
+    urlOptions.query = query
+    urlOptions.category = category
+    urlOptions.date = when
+    urlOptions.venue = where
+    urlOptions.price = price
+    setSearchUrl(buildSearchURL(urlOptions))
+  }
+
+  const handleWhere = (where: string) => {
+    setWhere(where)
+    urlOptions.query = query
+    urlOptions.category = category
+    urlOptions.date = when
+    urlOptions.venue = where
+    urlOptions.price = price
+    setSearchUrl(buildSearchURL(urlOptions))
+  }
+
+  const handlePrice = (price: string) => {
+    setPrice(price)
+    urlOptions.query = query
+    urlOptions.category = category
+    urlOptions.date = when
+    urlOptions.venue = where
+    urlOptions.price = price
+    setSearchUrl(buildSearchURL(urlOptions))
+  }
+
+  const closeModal = async () => {
+    const { Modal } = await import("tw-elements")
+      const myModal = Modal.getInstance(document.getElementById("exampleModalFullscreen"))
+      myModal.hide()
+  }
+
   return (
     <div
       data-te-modal-init
@@ -34,14 +100,10 @@ const SearchModal = () => {
           </div>
           <div className="relative p-4 min-[0px]:overflow-y-auto">
           <div className="mb-3 mt-8 justify-center flex">
-
-              <SearchInput />
-
+            <SearchInput closeModal={closeModal} handleQuery={handleQuery} searchUrl={searchUrl}/>
           </div>
-
-          <SearchOptions />
+          <SearchOptions handleCategory={handleCategory} handleWhen={handleWhen} handleWhere={handleWhere} handlePrice={handlePrice} />
           </div>
-         
         </div>
       </div>
     </div>

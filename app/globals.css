@@ -45,7 +45,29 @@ body {
 
 /* HANDLE */
 ::-webkit-scrollbar-thumb {
-  background: black;
+  background: #31859C;
   height: 10%;
 }
 
+button[id^="datepicker-toggle"] {
+  width: 100%;
+  height: 100%;
+  justify-content: end;
+  left: 47%;
+}
+
+button[id^="timepicker-toggle"] {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  right: -47%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+svg[fill="none"][viewBox="0 0 24 24"][stroke-width="1.5"][stroke="currentColor"] {
+  /* Your styles here */
+  width: 16px;
+  height: 16px;
+}

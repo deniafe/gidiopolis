@@ -6,9 +6,9 @@ const SignupModal = () => {
     <div
       data-te-modal-init
       className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-      id="authModal"
+      id="signupModal"
       tabIndex={-1}
-      aria-labelledby="exampleModalFullscreenLabel"
+      aria-labelledby="signupModalFullscreenLabel"
       aria-hidden="true"
     >
       <div

@@ -6,7 +6,7 @@ import { BusinessEconomy } from '../icons/BusinessEconomy';
 import { PublicSector } from '../icons/PublicSector';
 import { Religious } from '../icons/Religious';
 import { Tech } from '../icons/Tech';
-import { Others } from '../icons/Others';
+// import { Others } from '../icons/Others';
 
 
 const Categories = () => {
