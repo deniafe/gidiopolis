@@ -1,8 +1,6 @@
 "use client";
 import SearchResultBar from "@/components/event/SearchResultBar";
 import SimilarEvent from "@/components/event/SimilarEvent";
-import SearchInput from "@/components/home/SearchInput";
-import SearchOptions from "@/components/home/SearchOptions";
 import { FirebaseEvent, getCategoryEvents, SearchOptions as ISearchOptions, searchEvents } from "@/firebase/firestore/get_data";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -43,7 +41,6 @@ export default function Event() {
   const date = searchParams.get("date")
 
   useEffect(() => {
-    console.log('There is use effecttttttttttttttttttttttttttttttttttttttttttttt', category)
     setLoading(true)
     const init = async () => {
       const options: ISearchOptions = {}
@@ -70,11 +67,24 @@ export default function Event() {
     init();
   }, []);
 
+  useEffect(() => {
+    // Function to scroll to the element with id "scroll"
+    const scrollToScrollDiv = () => {
+      const scrollDiv = document.getElementById("scroll");
+      if (scrollDiv) {
+        // Use the scrollTo method to scroll to the element's top position
+        scrollDiv.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+
+    // Call the scrollToScrollDiv function when the component mounts
+    scrollToScrollDiv();
+  }, []); 
+
   return (
     <main className="bg-white md:pt-32 md:px-[2rem]">
          <SearchResultBar />
-          
-
+         <div id="scroll" className="h-40" ></div>
           <SimilarEvent title={'Search Result'} firebaseEvents={events}/>
     </main>
   )

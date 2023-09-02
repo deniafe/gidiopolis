@@ -2,17 +2,24 @@ import React, { useEffect, useState } from 'react'
 import EventCard from './EventCard'
 import PrimaryButton from '../global/PrimaryButton'
 import { FirebaseEvent, getEvents } from '@/firebase/firestore/get_data';
+import { useEventContext } from '@/context/EventContext'
 
 interface LatestEventProps {
   firebaseEvents: FirebaseEvent[] | undefined;
 }
 
-const LatestEvent = ({firebaseEvents}: LatestEventProps) => {
+const LatestEvent = () => {
+  const { firebaseEvents, setCurrentCount } = useEventContext()
 
   const handleButtonClick = (event: React.MouseEvent<HTMLDivElement>) => {
     console.log("Button clicked from parent component!");
     // Additional logic or state changes can be performed here
   };
+
+  const handleShowMore = () => {
+    setCurrentCount((prevCount: number) => prevCount + 8);
+  };
+  
 
   return (
     <section
@@ -31,7 +38,7 @@ const LatestEvent = ({firebaseEvents}: LatestEventProps) => {
       </div>
         
       <div className="flex justify-center mt-8" >
-        <PrimaryButton onClick={handleButtonClick}>
+        <PrimaryButton onClick={handleShowMore}>
           <div className=" px-[4rem] text-lg">See More</div>
         </PrimaryButton>
       </div>

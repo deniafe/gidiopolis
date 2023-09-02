@@ -1,9 +1,7 @@
 "use client";
 import Hero from "@/components/event/Hero";
 import SimilarEvent from "@/components/event/SimilarEvent";
-import { db } from "@/firebase/config";
 import { FirebaseEvent, getCategoryEvents, getDocument } from "@/firebase/firestore/get_data";
-import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 export default function Event( { params: { id } }: { params: { id: string } } ) {
@@ -36,7 +34,7 @@ export default function Event( { params: { id } }: { params: { id: string } } ) 
   return (
     <main className="bg-white md:pt-32 md:px-[2rem]">
       <Hero event={event} />
-        <SimilarEvent title={'Similar Event'} firebaseEvents={events}/>
+      <SimilarEvent title={'Similar Event'} firebaseEvents={events}/>
     </main>
   )
 }

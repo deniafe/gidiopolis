@@ -2,16 +2,18 @@
 import Image from 'next/image'
 import { useEffect } from "react";
 import { Logo } from '../icons/Logo';
-import PrimaryButton from './PrimaryButton';
-import TextButton from './TextButton';
+import PrimaryButton from '../global/PrimaryButton';
+import TextButton from '../global/TextButton';
 import { categories } from '@/utils/constants';
 import { useAuthContext } from "@/context/AuthContext";
-import { UserMenu } from './UserMenu';
+import { UserMenu } from '../global/UserMenu';
+import { useEventContext } from '@/context/EventContext'
 import Link from 'next/link';
 
 
 const Navbar = () => {
   const { user } = useAuthContext()
+  const { getCategory } = useEventContext()
 
   const handleButtonClick = (event: React.MouseEvent<HTMLDivElement>) => {
     console.log("Button clicked from parent component!");
@@ -101,9 +103,8 @@ const Navbar = () => {
 
             <div className="md:flex md:flex-row items-center">
               <ul className="list-none text-sm font-medium mr-auto pl-6 flex flex-col md:mr-6 md:pl-0 lg:mt-1 lg:flex-row" data-te-navbar-nav-ref>
-                {/* Home link */}
+                {/* Categories Drop Down link */}
                 <li className="my-4 pl-2 lg:my-0 lg:pl-2 lg:pr-1" data-te-nav-item-ref>
-                   {/* Dropdown */}
                   <div className="relative text-sm font-medium items-center" data-te-dropdown-ref>
                     <a
                       className="flex items-center text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
@@ -135,7 +136,11 @@ const Navbar = () => {
                       data-te-dropdown-menu-ref
                     >
                       {categories.map((category, index) => (
-                        <li key={index}>
+                        <li 
+                        onClick={() => {
+                          getCategory(category.title)
+                        }}
+                        key={index}>
                           <a
                             className="block w-full whitespace-nowrap bg-transparent px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-neutral-100 active:text-neutral-800 active:no-underline disabled:pointer-events-none disabled:bg-transparent disabled:text-neutral-400 dark:text-neutral-200 dark:hover:bg-neutral-600"
                             href="#"
@@ -148,27 +153,17 @@ const Navbar = () => {
                     </ul>
                   </div>
                 </li>
-                {/* <li className="mb-4 pl-2 lg:my-0 lg:pl-2 lg:pr-1" data-te-nav-item-ref>
-                  <a
-                    className="active disabled:text-black/30 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                    aria-current="page"
-                    href="https://gidiopolis.com/?page_id=30"
-                    data-te-nav-link-ref
-                  >
-                    About
-                  </a>
-                </li> */}
-                 {/* Features link */}
+                 {/* About link */}
                  <li className="mb-4 pl-2 lg:mb-0 lg:pl-2 lg:pr-1" data-te-nav-item-ref>
                   <a
                     className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                    href="#"
+                    href="https://blog.gidiopolis.com/?page_id=30"
                     data-te-nav-link-ref
                   >
                     About
                   </a>
                 </li>
-                {/* Features link */}
+                {/* Contact link */}
                 {/* <li className="mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1" data-te-nav-item-ref>
                   <a
                     className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
@@ -178,11 +173,11 @@ const Navbar = () => {
                     Contact
                   </a>
                 </li> */}
-                {/* Pricing link */}
+                {/* Blog link */}
                 <li className="mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1" data-te-nav-item-ref>
                   <a
                     className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                    href="https://gidiopolis.com/"
+                    href="https://blog.gidiopolis.com/"
                     data-te-nav-link-ref
                   >
                     Blog

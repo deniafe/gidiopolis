@@ -1,21 +1,19 @@
 'use client'
 import 'tw-elements/dist/css/tw-elements.min.css'
 import './globals.css'
-import Footer from '../components/global/Footer'
-import Navbar from '../components/global/Navbar'
-import SignupModal from '@/components/global/SignupModal'
+import Footer from '../components/layout/Footer'
+import Navbar from '../components/layout/Navbar'
+import SignupModal from '@/components/layout/SignupModal'
 import { ToastContainer } from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css'
-import SignInModal from '@/components/global/SignInModal'
+import SignInModal from '@/components/layout/SignInModal'
 import { AuthContextProvider } from '@/context/AuthContext'
-import Head from 'next/head'
+import { EventContextProvider } from '@/context/EventContext'
+import { UserEventContextProvider } from '@/context/UserEventContext'
 import { ResetModal } from '@/components/global/ResetPasswordModal'
 import CreateEventModal from '@/components/event/CreateEventModal'
-
-// export const metadata = {
-//   title: 'Gidiopolis',
-//   description: 'Search For Events In Your City',
-// }
+import HomeSearch from '@/components/home/HomeSearch'
+import { ConfirmDelete } from '@/components/user_event/ConfirmDelete'
 
 export default function RootLayout({
   children,
@@ -28,18 +26,26 @@ export default function RootLayout({
       <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
       <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
       <link rel="manifest" href="/site.webmanifest" />
+      <title>Search For Events In Your City | Gidiopolis</title>
+      <meta name="description" content="Search For Events In Your City | Gidiopolis" />
        <body>
           <AuthContextProvider>
-            <Navbar />
-            <main>
-              {children}
-            </main>
-            <Footer />
-            <SignupModal />
-            <SignInModal />
-            <ResetModal />
-            <CreateEventModal />
-            <ToastContainer />
+            <EventContextProvider>
+              <UserEventContextProvider>
+                <Navbar />
+                <main>
+                  {children}
+                </main>
+                <Footer />
+                <SignupModal />
+                <SignInModal />
+                <ResetModal />
+                <HomeSearch />
+                <CreateEventModal />
+                <ConfirmDelete />
+                <ToastContainer />
+              </UserEventContextProvider>
+            </EventContextProvider>
           </AuthContextProvider>
         </body>
     </html>

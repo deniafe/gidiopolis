@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import React, { ReactNode } from 'react';
 import { Timestamp } from 'firebase/firestore';
 
-interface ReusableCardProps {
+interface ReusableCardProps { 
   id: string;
   slug: string;
   imageUrl: string;

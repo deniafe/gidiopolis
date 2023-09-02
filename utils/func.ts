@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
+import validator from 'validator';
 
 export function getInitials(name: string): string {
   const parts = name.split(" ");
@@ -149,4 +150,45 @@ export function convertToTimestamp(dateString: string): Timestamp | null {
   const timestamp = Timestamp.fromDate(jsDate);
   return timestamp;
 }
+
+export function validateEmail(email: string) {
+  return validator.isEmail(email)
+} 
+
+export function validatePhoneNumber(number: string) {
+   const phoneNumberRegex = /^\d{11}$/
+   return phoneNumberRegex.test(number)
+}
+
+export function validateUrl(url: string) {
+  const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+  return urlRegex.test(url);
+}
+
+export function validatePrice(inputString: string) {
+  const cleanedInput = inputString.trim().toLowerCase();
+  const parsedNumber = parseFloat(cleanedInput);
+
+  if (!isNaN(parsedNumber) && parsedNumber > 0) {
+    return true;
+  } else if (cleanedInput === 'free') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function makePrice(inputString: string) {
+  const cleanedInput = inputString.trim().toLowerCase();
+  const parsedNumber = parseFloat(cleanedInput);
+
+  if (!isNaN(parsedNumber) && parsedNumber > 0) {
+    return 'paid';
+  } else if (cleanedInput === 'free') {
+    return 'free';
+  } else {
+    return 'invalid';
+  }
+}
+
 

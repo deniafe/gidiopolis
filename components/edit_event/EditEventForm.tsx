@@ -11,29 +11,52 @@ import { errorMessage } from '@/firebase/error_message';
 import addData from '@/firebase/firestore/add_data';
 import { successMessage } from '@/firebase/success_message';
 import { useAuthContext } from '@/context/AuthContext';
-import { convertToTimestamp, createSlug, makePrice, validateEmail, validatePhoneNumber, validatePrice, validateUrl } from '@/utils/func';
+import { convertToTimestamp, createSlug, formatDate, makePrice, validateEmail, validatePhoneNumber, validatePrice, validateUrl } from '@/utils/func';
 import { useRouter } from 'next/navigation';
 import { addImage } from '@/firebase/firestore/add_image';
+import { FirebaseEvent } from '@/firebase/firestore/get_data';
+import { Timestamp } from 'firebase/firestore';
 
-const CreateEventForm = () => {
+interface EditEventForm {
+  id?: string;
+  slug?: string;
+  imageUrl?: string;
+  name?: string;
+  title?: string;
+  email?: string;
+  number?: string;
+  website?: string
+  date?: Timestamp;
+  time?: string;
+  venue?: string;
+  state?: string;
+  category?: string;
+  priceAmount?: string;
+  price?: string;
+  isApproved?: string;
+  description?: string;
+}
+
+
+const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, title, email, number, website, date, time, category, priceAmount, price, venue, state, isApproved, description }) => {
   const { user } = useAuthContext()
   const router = useRouter()
   
   const [loading, setLoading] = useState(false);
-  const [organizerName, setOrganizerName] = useState('');
-  const [organizerEmail, setOrganizerEmail] = useState('');
-  const [organizerNumber, setOrganizerNumber] = useState('');
-  const [organizerWebsite, setOrganizerWebsite] = useState('');
-  const [eventName, setEventName] = useState('');
-  const [eventCategory, setEventCategory] = useState('');
-  const [eventPrice, setEventPrice] = useState('');
-  const [eventPriceAmount, setEventPriceAmount] = useState('');
+  const [organizerName, setOrganizerName] = useState(name || '');
+  const [organizerEmail, setOrganizerEmail] = useState(email || '');
+  const [organizerNumber, setOrganizerNumber] = useState(number || '');
+  const [organizerWebsite, setOrganizerWebsite] = useState(website || '');
+  const [eventName, setEventName] = useState(title || '');
+  const [eventCategory, setEventCategory] = useState(category || '');
+  const [eventPrice, setEventPrice] = useState(price || '');
+  const [eventPriceAmount, setEventPriceAmount] = useState(priceAmount || '');
   const [eventBanner, setEventBanner] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
-  const [eventState, setEventState] = useState('');
-  const [eventAddress, setEventAddress] = useState('');
-  const [eventDescription, setEventDescription] = useState('');
+  const [eventState, setEventState] = useState(state || '');
+  const [eventAddress, setEventAddress] = useState(venue || '');
+  const [eventDescription, setEventDescription] = useState(description || '');
   const [twitter, setTwitter] = useState('');
   const [instagram, setInstagram] = useState('');
   const [linkedIn, setLinkedIn] = useState('');
@@ -182,7 +205,7 @@ const CreateEventForm = () => {
 
         <div className="md:px-[2rem]  md:mb-0" >
           <h2 className="text-center  text-[1.75rem] text-black font-medium mb-4 md:mb-12">
-            Share Your Event On Our Platform
+            Edit {eventName} Event
           </h2>
 
           <div className="mt-4 md:px-6">
@@ -201,6 +224,7 @@ const CreateEventForm = () => {
                     label="Organizer name" 
                     len={25} 
                     type="text" 
+                    value={organizerName}
                     rules={(val: string) => val.length < 3 }
                     errorMessage='Organizer Name cannot be less than 2 chacracters'
                     handleChange={(val) => setOrganizerName(val)} 
@@ -212,6 +236,7 @@ const CreateEventForm = () => {
                   <Input 
                     label="Organizer Email" 
                     type="email" 
+                    value={organizerEmail}
                     rules={(val: string) => !validateEmail(val) }
                     errorMessage='Organizer Email must be valid'
                     handleChange={(val) => setOrganizerEmail(val)} 
@@ -223,6 +248,7 @@ const CreateEventForm = () => {
                   <Input 
                     label="Organizer Phone Number" 
                     len={13} type="text" 
+                    value={organizerNumber}
                     rules={(val: string) => !validatePhoneNumber(val) }
                     errorMessage='Organizer Phone Number must be valid'
                     handleChange={(val) => setOrganizerNumber(val)} 
@@ -234,6 +260,7 @@ const CreateEventForm = () => {
                   <Input 
                     label="Organizer Website" 
                     type="text" 
+                    value={organizerWebsite}
                     rules={(val: string) => !validateUrl(val) }
                     errorMessage='Organizer Website url must be valid'
                     handleChange={(val) => setOrganizerWebsite(val)} 
@@ -248,6 +275,7 @@ const CreateEventForm = () => {
                   <Input 
                     label="Event Name" 
                     len={25} type="text" 
+                    value={eventName}
                     rules={(val: string) => val.length < 3 }
                     errorMessage='Event Name cannot be less than 2 chacracters'
                     handleChange={(val) => setEventName(val)} 
@@ -267,6 +295,7 @@ const CreateEventForm = () => {
                     label="Event Price" 
                     len={10} 
                     type="text" 
+                    value={eventPriceAmount}
                     rules={(val: string) => !validatePrice(val) }
                     errorMessage="Price should either be 'free' or a number"
                     handleChange={(val) => {
@@ -316,6 +345,7 @@ const CreateEventForm = () => {
                   <Input 
                     label="Event Address" 
                     len={25} type="text" 
+                    value={eventAddress}
                     rules={(val: string) => val.length < 6 }
                     errorMessage='Event Address cannot be less than 6 chacracters'
                     handleChange={(val) => setEventAddress(val)} 
@@ -330,6 +360,7 @@ const CreateEventForm = () => {
                   <TextArea 
                     label="About Event" 
                     type="text" 
+                    value={eventDescription}
                     rules={(val: string) => val.length < 50 }
                     errorMessage='Event Description cannot be less than 50 chacracters'
                     handleChange={(val) => setEventDescription(val)} 
@@ -381,7 +412,7 @@ const CreateEventForm = () => {
                 className="my-8 inline-block text-center cursor-pointer w-full rounded-full bg-my-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#31859C] transition duration-150 ease-in-out hover:bg-cyan-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-cyan-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-cyan-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                 data-te-ripple-init
                 data-te-ripple-color="light"
-                onClick={handleFormSubmit}
+                // onClick={handleFormSubmit}
               >
 
                 {
@@ -389,7 +420,7 @@ const CreateEventForm = () => {
                   (<Loading />) :
                   (
                     <span>
-                      Create New Event
+                      Edit Event
                     </span>
                   )
                 }

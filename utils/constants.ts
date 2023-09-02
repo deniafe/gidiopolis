@@ -24,12 +24,20 @@ export const categories = [
     url: '/it-tech'
   },
   {
-    title: 'Others',
-    url: '/others'
-  }
+    title: 'Music/Concert',
+    url: '/music-concert'
+  },
+  {
+    title: 'Children',
+    url: '/children'
+  },
+  // {
+  //   title: 'Others',
+  //   url: '/others'
+  // }
 ];
 
-export const catexts = [  'Arts & Culture',  'Night Life',  'Public Sector & Policy',  'Business & Economy',  'Religious',  'IT/Tech',  'Others']
+export const catexts = [  'Arts & Culture',  'Night Life',  'Public Sector & Policy', 'Music/Concert',  'Business & Economy',  'Religious',  'IT/Tech',  'Children']
 
 
 

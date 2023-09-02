@@ -18,7 +18,7 @@ const SimilarEvent = ({firebaseEvents, title}: LatestEventProps) => {
 
   return (
     <section
-      className="mb-20 md:mb-20 md:min-h-screen"
+      className="mb-20 md:mb-32"
     >
        <h2 className="flex justify-center md:justify-start text-[1.5rem] text-black font-medium px-[2rem]">
           {title}

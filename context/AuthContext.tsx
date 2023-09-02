@@ -1,3 +1,4 @@
+// "use client";
 import React, { useState, useEffect } from 'react';
 import {
     onAuthStateChanged,
@@ -26,7 +27,7 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ childr
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    useEffect(() => { 
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             console.log('Auth has just changed', user)
             if (user) {
