@@ -1,22 +1,4 @@
-// import { getDownloadURL, ref, uploadString } from "firebase/storage";
-// import { db, storage } from "../config";
-// import { doc, updateDoc } from "firebase/firestore";
-
-// export async function addImage({ docRefId, eventBanner }: {docRefId: string, eventBanner: string}) {
-//   //👇🏻 Database reference to the image
-//   const imageRef = ref(storage, `events/${docRefId}/image`);
-//   await uploadString(imageRef, eventBanner, "data_url").then(async () => {
-//       //👇🏻 Gets the image URL
-//       const downloadURL = await getDownloadURL(imageRef);
-//       //👇🏻 Updates the docRef, by adding the flier URL to the document
-//       await updateDoc(doc(db, "events", docRefId), {
-//           eventBanner: downloadURL,
-//       }); 
-//   });
-// }
-
-
-import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { getDownloadURL, ref, uploadString, deleteObject } from "firebase/storage";
 import { db, storage } from "../config";
 import { doc, updateDoc } from "firebase/firestore";
 
@@ -45,3 +27,31 @@ export async function addImage({ docRefId, eventBanner }: { docRefId: string; ev
 
   return { imageResult, imageError };
 }
+
+
+export async function deleteImage(docRefId: string) {
+  let imageDeleteResult = false;
+  let imageDeleteError = null;
+
+  try {
+    // Reference to the image in Firebase Storage
+    const imageRef = ref(storage, `events/${docRefId}/image`);
+
+    // Delete the image from Firebase Storage
+    await deleteObject(imageRef);
+
+    // Update the Firestore document to remove the reference to the deleted image
+    await updateDoc(doc(db, "events", docRefId), {
+      eventBanner: null, // Set the eventBanner field to null or remove it entirely
+    });
+
+    console.log("Image deleted successfully");
+    imageDeleteResult = true;
+  } catch (e) {
+    console.error("Error deleting image:", e);
+    imageDeleteError = e;
+  }
+
+  return { imageDeleteResult, imageDeleteError };
+}
+

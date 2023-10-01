@@ -1,8 +1,7 @@
 'use client'
 import { cutOffLongStrings, formatDate } from '@/utils/func';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Timestamp } from 'firebase/firestore';
 
 interface ReusableCardProps { 
@@ -20,15 +19,9 @@ interface ReusableCardProps {
 
 const EventCard: React.FC<ReusableCardProps> = ({ id, slug, imageUrl, title, date, time, venue, state, isFree, organizer }) => {
 
-  // const router = useRouter();
-
-  // const handleRoute = (slug: string, id: string) =>
-	// 	router.push({ pathname: `/e/${id}/${slug}` });
-
   return (
     <Link
     href={`/e/${id}/${slug}`}
-    //  onClick={() => handleRoute(slug, id)}
       className="block cursor-pointer rounded w-[17rem] bg-white transition-shadow hover:shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
       <div className="relative overflow-hidden bg-cover bg-no-repeat" data-te-ripple-init data-te-ripple-color="light">
         <img className="rounded-t w-full h-32 object-cover" src={imageUrl} alt="" />

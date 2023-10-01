@@ -8,17 +8,17 @@ import { DateInput } from '../global/DateInput';
 import { TimeInput } from '../global/TimeInput';
 import { TextArea } from '../global/TextArea';
 import { errorMessage } from '@/firebase/error_message';
-import addData from '@/firebase/firestore/add_data';
+import { editData } from '@/firebase/firestore/add_data';
 import { successMessage } from '@/firebase/success_message';
 import { useAuthContext } from '@/context/AuthContext';
-import { convertToTimestamp, createSlug, formatDate, makePrice, validateEmail, validatePhoneNumber, validatePrice, validateUrl } from '@/utils/func';
+import { convertToTimestamp, createSlug, formatDate, formatDateFromTimestamp, isFirebaseStorageUrl, makePrice, validateEmail, validatePhoneNumber, validatePrice, validateUrl } from '@/utils/func';
 import { useRouter } from 'next/navigation';
-import { addImage } from '@/firebase/firestore/add_image';
+import { addImage, deleteImage } from '@/firebase/firestore/add_image';
 import { FirebaseEvent } from '@/firebase/firestore/get_data';
 import { Timestamp } from 'firebase/firestore';
 
 interface EditEventForm {
-  id?: string;
+  id: string;
   slug?: string;
   imageUrl?: string;
   name?: string;
@@ -26,6 +26,7 @@ interface EditEventForm {
   email?: string;
   number?: string;
   website?: string
+  aboutOrganizer?: string
   date?: Timestamp;
   time?: string;
   venue?: string;
@@ -38,7 +39,7 @@ interface EditEventForm {
 }
 
 
-const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, title, email, number, website, date, time, category, priceAmount, price, venue, state, isApproved, description }) => {
+const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, title, email, number, website, aboutOrganizer, date, time, category, priceAmount, price, venue, state, isApproved, description }) => {
   const { user } = useAuthContext()
   const router = useRouter()
   
@@ -47,13 +48,14 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
   const [organizerEmail, setOrganizerEmail] = useState(email || '');
   const [organizerNumber, setOrganizerNumber] = useState(number || '');
   const [organizerWebsite, setOrganizerWebsite] = useState(website || '');
+  const [organizerDescription, setOrganizerDescription] = useState(aboutOrganizer || '');
   const [eventName, setEventName] = useState(title || '');
   const [eventCategory, setEventCategory] = useState(category || '');
   const [eventPrice, setEventPrice] = useState(price || '');
-  const [eventPriceAmount, setEventPriceAmount] = useState(priceAmount || '');
-  const [eventBanner, setEventBanner] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [eventTime, setEventTime] = useState('');
+  const [eventPriceAmount, setEventPriceAmount] = useState(priceAmount || '0');
+  const [eventBanner, setEventBanner] = useState(imageUrl || '');
+  const [eventDate, setEventDate] = useState((date && formatDateFromTimestamp(date)) || '');
+  const [eventTime, setEventTime] = useState(time || '');
   const [eventState, setEventState] = useState(state || '');
   const [eventAddress, setEventAddress] = useState(venue || '');
   const [eventDescription, setEventDescription] = useState(description || '');
@@ -63,7 +65,7 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
 
 
 
-  async function handleFormSubmit(event: React.MouseEvent<HTMLDivElement>) {
+  async function handleEventEdit(event: React.MouseEvent<HTMLDivElement>) {
     event.preventDefault();
     if(loading) return
 
@@ -81,6 +83,10 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
 
     if (!validateUrl(organizerWebsite)) {
       return errorMessage("Organizer's website url is empty or invalid.");
+    }
+
+    if(organizerDescription.length < 50) {
+      return errorMessage("About organizer must not be empty and should be more than 50 characters");
     }
 
     if(eventName.length < 3) {
@@ -132,13 +138,13 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
     }
 
     setLoading(true)
+
     const data = {
-      createdAt: new Date(),
-      userId: user?.uid,
       organizerName,
       organizerEmail,
       organizerNumber,
       organizerWebsite,
+      organizerDescription,
       eventName,
       eventCategory,
       eventPrice,
@@ -149,51 +155,79 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
       eventAddress,
       eventDescription,
       slug: createSlug(eventName),
-      isApproved: true
+      twitter,
+      instagram,
+      linkedIn
     }
 
-    console.log('data to be sent to firebase', data)
+    // setLoading(false)
 
-    setLoading(false)
+    console.log('sending details for updating', id, data)
 
-    const { result, error } = await addData('events', data)
+    const { result, error } = await editData('events', id, data)
 
+    // console.log('This is the result of editing', result, error)
+
+    // If there is an error editing the event, return an error message
     if (error) {
       setLoading(false)
       return errorMessage(error)
     }
 
-    if (result && eventBanner !== null) {
-      const { imageResult, imageError } = await addImage({docRefId: result?.id, eventBanner})
+    console.log('data to be sent to firebase', data)
+    console.log('Is event image a firebase image?', isFirebaseStorageUrl(eventBanner))
 
+    // If the data has been successfully updated and the event banner is not a firebaseStorageUrl
+    if (result === 'Data successfully updated' && !isFirebaseStorageUrl(eventBanner)) {
+
+      console.log('New image detected and we will be uplaoding it')
+
+      // First delete the old image
+      const { imageDeleteResult, imageDeleteError } = await deleteImage(id)
+
+      // If there is an error with deleting an image, return an error message
+      if (imageDeleteError) {
+        setLoading(false)
+        return errorMessage(error)
+      }
+
+      // If we get here, it means the image has been deleted successfully, so upload the new image
+      const { imageResult, imageError } = await addImage({docRefId: id, eventBanner})
+
+      // If there was an error uplaoding the new image, return an error message
       if (imageError) {
         setLoading(false)
         return errorMessage(error)
       }
 
-      successMessage("Event created successfully 🎉")
+      // If we get here, it means the image has been uploaded successfully
+      successMessage("Event edited successfully 🎉")
       setLoading(false)
       return router.push("/");
       
     } else {
-      successMessage("Event created successfully 🎉")
+      successMessage("Event edited successfully 🎉")
       setLoading(false)
       return router.push("/");
     }
 
   }
-  
-  
-
 
   useEffect(() => {
-    const init = async () => {
-      const {  Datepicker, Timepicker, Select, initTE } = await import("tw-elements");
-      initTE({ Datepicker, Timepicker, Select});
-    };
-    init();
-
+    // Check if the URL does not end with "/create-event"
+    if (!window.location.pathname.endsWith("/create-event")) {
+      const init = async () => {
+        const { Datepicker, Timepicker, Select, initTE } = await import("tw-elements");
+        initTE({ Datepicker, Timepicker, Select });
+        console.log('Launching date picker in edit event form', price, priceAmount)
+      };
+      init();
+    }
   }, []);
+
+  useEffect(() => {
+    if (user == null) router.push("/")
+  }, [user])
 
 
   return (
@@ -270,6 +304,19 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
               </div>
 
               <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
+                  {/* About Organizer input */}
+                <div className="mb-1">
+                  <TextArea 
+                    label="About Organizer" 
+                    type="text" 
+                    rules={(val: string) => val.length < 50 }
+                    errorMessage='About organizer cannot be less than 50 chacracters'
+                    handleChange={(val) => setOrganizerDescription(val)} 
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
                 {/* Event Name input */}
                 <div className="mb-1">
                   <Input 
@@ -286,7 +333,7 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
               <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mb-2">
                 {/* Event Category input */}
                 <div className="mb-1">
-                  <SelectInput label='Event Category' items={catexts} handleChange={(value) => setEventCategory(value)} />
+                  <SelectInput value={eventCategory} label='Event Category' items={catexts} handleChange={(value) => setEventCategory(value)} />
                 </div>
 
                 {/* Event Price input */}
@@ -301,7 +348,7 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
                     handleChange={(val) => {
                       if(makePrice(val) === 'free') {
                         setEventPrice('free')
-                        setEventPriceAmount('free')
+                        setEventPriceAmount('0')
                       } else if(makePrice(val) === 'paid') {
                         setEventPrice('paid')
                         setEventPriceAmount(val)
@@ -316,7 +363,7 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
               <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
                 {/* Event Upload Banner */}
                 <div className="mb-1">
-                  <UploadInput label='Event Banner' handleChange={(e) => setEventBanner(e)} />
+                  <UploadInput value={eventBanner} label='Event Banner' handleChange={(e) => setEventBanner(e)} />
                 </div>
               </div>
 
@@ -324,12 +371,12 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
 
                 {/* Event Date input */}
                 <div className="mb-1">
-                  <DateInput label={'Event Date'} handleChange={(value) => setEventDate(value)} />
+                  <DateInput value={eventDate} label={'Event Date'} handleChange={(value) => setEventDate(value)} /> 
                 </div>
 
                 {/* Time input */}
                 <div className="mb-1">
-                  <TimeInput label={'Event Time'} handleChange={(value) => setEventTime(value)} />
+                  <TimeInput value={eventTime} label={'Event Time'} handleChange={(value) => setEventTime(value)} />
                 </div>
 
               </div>
@@ -337,7 +384,7 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
               <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mb-2">
                 {/* States Select input */}
                 <div className="mb-1">
-                  <SelectInput label='Event State' items={states} handleChange={(value) => setEventState(value)} />
+                  <SelectInput value={eventState} label='Event State' items={states} handleChange={(value) => setEventState(value)} />
                 </div>
 
                {/* Event Address input */}
@@ -375,6 +422,7 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
                  <Input 
                   label="Twitter" 
                   type="text"
+                  value={twitter}
                   rules={(val: string) => !validateUrl(val) }
                   errorMessage='Url must be valid'
                   handleChange={(val) => setTwitter(val)} 
@@ -386,6 +434,7 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
                   <Input 
                     label="Instagram" 
                     type="text"
+                    value={instagram}
                     rules={(val: string) => !validateUrl(val) }
                     errorMessage='Url must be valid'
                     handleChange={(val) => setInstagram(val)} 
@@ -397,6 +446,7 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
                   <Input 
                     label="LinkedIn" 
                     type="text"
+                    value={linkedIn}
                     rules={(val: string) => !validateUrl(val) }
                     errorMessage='Url must be valid'
                     handleChange={(val) => setLinkedIn(val)} 
@@ -404,15 +454,13 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
                 </div>
 
               </div>
-
               
               {/* Submit button */}
               <div
-                // onClick={signUpWithEmail}
                 className="my-8 inline-block text-center cursor-pointer w-full rounded-full bg-my-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#31859C] transition duration-150 ease-in-out hover:bg-cyan-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-cyan-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-cyan-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                 data-te-ripple-init
                 data-te-ripple-color="light"
-                // onClick={handleFormSubmit}
+                onClick={handleEventEdit}
               >
 
                 {
@@ -437,4 +485,4 @@ const CreateEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, ti
   )
 }
 
-export default CreateEventForm
+export default EditEventForm

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface SelectInputProps {
   label: string;
   items: string[];
-  handleChange: (value: string) => void;
+  value?: string;
+  handleChange: (value: string) => void; 
 }
 
-export function SelectInput({ label, items, handleChange }: SelectInputProps) {
+export function SelectInput({ label, items, value, handleChange }: SelectInputProps) {
 
   const [selected, setSelected] = useState<string>('Select option');
 
@@ -14,6 +15,12 @@ export function SelectInput({ label, items, handleChange }: SelectInputProps) {
       setSelected(val)
       handleChange(val)
   };
+
+  useEffect(() => {
+    if(value) {
+      setSelected(value)
+    }
+  }, []);
 
   return (
     <>

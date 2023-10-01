@@ -37,11 +37,11 @@ export const categories = [
   // }
 ];
 
-export const catexts = [  'Arts & Culture',  'Night Life',  'Public Sector & Policy', 'Music/Concert',  'Business & Economy',  'Religious',  'IT/Tech',  'Children']
+export const catexts = [  'Arts & Culture',  'Night Life', 'Music/Concert',  'Public Sector & Policy', 'Business & Economy',  'Religious', 'Kids',  'IT/Tech']
 
 
 
-export const links = [
+export const company = [
   {
     title: 'About',
     url: '/about'
@@ -54,6 +54,9 @@ export const links = [
     title: 'Blog',
     url: '/blog'
   },
+];
+
+export const resources = [
   {
     title: 'Privacy Policy',
     url: '/privacy-policy'

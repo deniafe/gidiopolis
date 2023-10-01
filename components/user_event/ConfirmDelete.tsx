@@ -1,9 +1,12 @@
 import { deleteEvent } from "@/firebase/firestore/get_data"
 import { useEventContext } from '@/context/UserEventContext'
 import { errorMessage } from "@/firebase/error_message"
+import { Loading } from "../global/Loading"
+import { useState } from "react"
 
 export const ConfirmDelete = () => {
   const { eventDelete, setUserEvents } = useEventContext()
+  const [loading, setLoading] = useState(false);
 
   const closeModal = async () => {
     const { Modal } = await import("tw-elements")
@@ -12,12 +15,15 @@ export const ConfirmDelete = () => {
   }
 
   const handleDelete = async () => {
+    setLoading(true)
     if(!eventDelete) {
+      setLoading(false)
       closeModal()
       return errorMessage('Cannot find event to delete ❌')
     }
     setUserEvents([])
     await deleteEvent(eventDelete.eventId, eventDelete.eventName)
+    setLoading(false)
     return closeModal()
   }
 
@@ -82,7 +88,15 @@ export const ConfirmDelete = () => {
                 data-te-ripple-color="light"
                 onClick={handleDelete}
                 className="inline-block rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-danger transition duration-150 ease-in-out hover:bg-red-50 hover:text-red-800 focus:text-red-800 focus:outline-none focus:ring-0 active:text-red-700">
-                Delete
+                  {
+                  loading ?
+                  (<Loading />) :
+                  (
+                    <span>
+                      Delete
+                    </span>
+                  )
+                }
               </button>
             </div>
           </div>

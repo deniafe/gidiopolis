@@ -3,7 +3,8 @@ import {
   QueryDocumentSnapshot,
   doc,
   getDoc,
-  setDoc
+  setDoc,
+  updateDoc
 } from 'firebase/firestore'
 import { db } from '../config';
 import { AdditionalInformation, UserData } from '@/utils/types';
@@ -47,4 +48,19 @@ export const createUserDocumentFromAuth = async (
   }
 
   return {user, error}
+};
+
+export const updateProfileInFirestore = async (userId: string, newDisplayName: string, newEmail: string) => {
+  const userDocRef = doc(db, 'users', userId);
+
+  try {
+    await updateDoc(userDocRef, {
+      displayName: newDisplayName,
+      email: newEmail,
+    });
+    console.log('Profile updated successfully in Firestore.');
+  } catch (error) {
+    errorMessage(error + "❌")
+    console.error('Error updating profile in Firestore:', error);
+  }
 };

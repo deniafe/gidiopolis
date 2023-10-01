@@ -46,7 +46,7 @@ const Hero = () => {
            data-te-target="#exampleModalFullscreen"
            data-te-ripple-init
            data-te-ripple-color="light"
-          className='flex cursor-pointer mt-8 py-3 mx-[2rem] md:mx-0 rounded-full shadow-[0_3px_8px_-4px_#31859C]'>
+           className='flex cursor-pointer mt-8 py-3 mx-[2rem] md:mx-0 rounded-full shadow-[0_3px_8px_-4px_#31859C]'>
             <div className="grow flex justify-center text-gray-600 text-xs md:text-sm">
               Search by categories, date, and location
             </div>

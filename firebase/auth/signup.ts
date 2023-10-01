@@ -1,5 +1,5 @@
 import firebase_app from "../config"
-import { GoogleAuthProvider, User, createUserWithEmailAndPassword, getAuth, signInWithPopup, signInWithRedirect } from "firebase/auth"
+import { GoogleAuthProvider, User, createUserWithEmailAndPassword, getAuth, signInWithPopup, signInWithRedirect, updateEmail } from "firebase/auth"
 import { errorMessage } from "../error_message"
 
 const auth = getAuth(firebase_app)
@@ -26,5 +26,17 @@ export async function signUp(email: string, password: string) {
     return { user, error }
 }
 
+export const updateAuthEmail = async (newEmail: string) => {
+    try {
+        const user = auth.currentUser || {} as User;
+        await updateEmail(user, newEmail);
+        console.log('Email updated successfully.');
+    } catch (error) {
+        errorMessage(error + "❌")
+        console.error('Error updating email in Firebase Authentication:', error);
+    }
+};
+
+  
 export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
 export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);

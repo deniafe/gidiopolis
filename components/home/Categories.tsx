@@ -7,6 +7,9 @@ import { PublicSector } from '../icons/PublicSector';
 import { Religious } from '../icons/Religious';
 import { Tech } from '../icons/Tech';
 import { Others } from '../icons/Others';
+import { Kids } from '../icons/Kids';
+import { Concert } from '../icons/Concert';
+import { useEventContext } from '@/context/EventContext'
 
 interface Category {
   label: string;
@@ -14,25 +17,26 @@ interface Category {
 }
 
 const categories: Category[] = [
-  // { label: 'All', icon: <Others /> },
-  { label: 'IT/Tech', icon: <Tech /> },
+  { label: 'All', icon: <Others /> },
   { label: 'Arts & Culture', icon: <Arts /> },
+  { label: 'Music/Concert', icon: <Concert /> },
   { label: 'Night Life', icon: <NightLife /> },
   { label: 'Pubic Sector & Policy', icon: <PublicSector /> },
-  { label: 'Music/Concert', icon: <Arts /> },
   { label: 'Business & Economy', icon: <BusinessEconomy /> },
   { label: 'Religious', icon: <Religious /> },
-  { label: 'Children', icon: <Others /> },
+  { label: 'Kids', icon: <Kids /> },
+  { label: 'IT/Tech', icon: <Tech /> },
 ];
 
-interface CategoriesProps {
-  getCategory: (category: string) => void;
-}
+// interface CategoriesProps {
+//   getCategory: (category: string) => void;
+// }
 
-const Categories = ({ getCategory }: CategoriesProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+const Categories = () => {
+  // const [selectedCategory, setSelectedCategory] = useState<string>('All'); 
+  const { selectedCategory, setSelectedCategory, getCategory } = useEventContext()
 
-  useEffect(() => {
+  useEffect(() => { 
     const init = async () => {
       const { Animate, initTE } = await import('tw-elements');
       initTE({ Animate });
@@ -42,15 +46,14 @@ const Categories = ({ getCategory }: CategoriesProps) => {
 
   return (
     <section className="mb-24 md:mb-24">
-      <h2 className="flex justify-center md:justify-start text-[1.75rem] text-black font-medium px-[2rem]">
+      {/* <h2 className="flex justify-center md:justify-start text-[1.75rem] text-black font-medium px-[2rem]">
         Categories
-      </h2>
+      </h2> */}
       <div className="flex flex-col items-center md:flex-row md:justify-around text-black px-[2rem] text-xs mt-8">
         {categories.map((category) => (
           <div
             key={category.label}
             onClick={() => {
-              getCategory(category.label);
               setSelectedCategory(category.label);
             }}
             className={`flex justify-between py-2 cursor-pointer rounded-full px-2 ${

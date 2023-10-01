@@ -33,7 +33,9 @@ export async function getDocument(collection: string, id: string): Promise<{ dat
         if (result.exists()) {
           console.log("Document data:", result.data());
         } else {
-          console.log("No such document!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          console.log("No such document!!!!!!!!!!!!!!!!!!!!!!!!!!! impossible");
+          error = 'No such document!!!!!!!!!!!!!!!!!!!!!!!!!!!';
+          console.log("The error string", error);
         }
         
     } catch (e) {
@@ -43,60 +45,86 @@ export async function getDocument(collection: string, id: string): Promise<{ dat
     return { data, error };
 }
 
-export const getEvents = (
+export const getEvents = async (
+  setEvents: Dispatch<SetStateAction<FirebaseEvent[] | undefined>>,
+  setLoading: Dispatch<SetStateAction<boolean>>,
+  lastDocSnapshot: QueryDocumentSnapshot<DocumentData> | null,
+  setLastDocSnapshot: Dispatch<SetStateAction<QueryDocumentSnapshot<DocumentData, DocumentData> | null>>
+) => {
+  try {
+    const batchSize = 8;
+
+    // Define the base query
+    const baseQuery = query(
+      collection(db, 'events'),
+      where('isApproved', '==', true),
+      orderBy('eventDate'),
+      limit(batchSize)
+    );
+
+    // If lastDocSnapshot is provided, adjust the query to start after it
+    const q = lastDocSnapshot
+      ? query(
+          baseQuery,
+          startAfter(lastDocSnapshot)
+        )
+      : baseQuery;
+
+    // Fetch the data once
+    const querySnapshot = await getDocs(q);
+
+    const firebaseEvents: FirebaseEvent[] = querySnapshot.docs.map((doc) => {
+      return { data: doc.data(), id: doc.id };
+    });
+
+    console.log('This is the firebase events', firebaseEvents);
+
+    // Combine existing events with new events, filtering out duplicates by ID
+    setEvents((prevEvents) => {
+      if (!prevEvents) {
+        return firebaseEvents;
+      }
+
+      // Create a Set to store unique event IDs
+      const uniqueEventIds = new Set(prevEvents.map((event) => event.id));
+
+      // Filter the new events to exclude duplicates by ID
+      const filteredFirebaseEvents = firebaseEvents.filter(
+        (event) => !uniqueEventIds.has(event.id)
+      );
+
+      // Concatenate the filtered new events with the existing events
+      const combinedEvents = [...prevEvents, ...filteredFirebaseEvents];
+
+      return combinedEvents;
+    });
+
+    setLoading(false);
+
+    // Get the last document's snapshot for the next batch
+    const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+    if (lastDocument) {
+      setLastDocSnapshot(lastDocument);
+    }
+  } catch (e) {
+    console.error(e);
+    // Handle the error
+  }
+};
+
+
+export const getUserEvents = async (
+  id: string,
   setEvents: Dispatch<SetStateAction<FirebaseEvent[] | undefined>>,
   setLoading: Dispatch<React.SetStateAction<boolean>>,
-  lastDocSnapshot: DocumentSnapshot | null, // Add lastDocSnapshot parameter
+  lastDocSnapshot: DocumentSnapshot<DocumentData, DocumentData> | null,
   setLastDocSnapshot: Dispatch<React.SetStateAction<DocumentSnapshot<DocumentData, DocumentData> | null>>,
   currentCount: number
 ) => {
   try {
     const batchSize = 8; // Number of events to fetch at once
     console.log('This is the current count number', currentCount);
-    const q = query(
-      collection(db, 'events'),
-      where('isApproved', '==', true),
-      orderBy('eventDate'), // Assuming you have a timestamp field
-      lastDocSnapshot ? startAfter(lastDocSnapshot) : startAfter(0), // Start after the current count
-      limit(batchSize)
-    );
 
-    const unsubscribe = onSnapshot(q, (querySnapshot: QuerySnapshot) => {
-      const firebaseEvents: FirebaseEvent[] = [];
-      querySnapshot.forEach((doc: QueryDocumentSnapshot) => {
-        firebaseEvents.push({ data: doc.data(), id: doc.id });
-      });
-      setEvents((prevEvents) => [...(prevEvents || []), ...firebaseEvents]);
-      setLoading(false);
-      console.log('These are the firebase events:', firebaseEvents);
-
-      // Get the last document's snapshot for the next batch
-      const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
-      if (lastDocument) {
-        // lastDocSnapshot = lastDocument; // Update lastDocSnapshot
-        setLastDocSnapshot(lastDocument)
-      }
-
-    });
-
-    return () => unsubscribe();
-  } catch (e) {
-    console.error(e);
-    // return errorMessage(error)
-  }
-};
-
-export const getUserEvents = (
-  id: string,
-  setEvents: Dispatch<SetStateAction<FirebaseEvent[] | undefined>>,
-  setLoading: Dispatch<React.SetStateAction<boolean>>,
-  lastDocSnapshot: DocumentSnapshot | null,
-  setLastDocSnapshot: Dispatch<React.SetStateAction<DocumentSnapshot<DocumentData, DocumentData> | null>>,
-  currentCount: number
-) => {
-  try {
-    const batchSize = 8; // Number of events to fetch at once
-    console.log('This is the current count number', currentCount); 
     const q = query(
       collection(db, 'events'),
       where('userId', '==', id),
@@ -105,34 +133,102 @@ export const getUserEvents = (
       limit(batchSize)
     );
 
-    const unsubscribe = onSnapshot(q, (querySnapshot: QuerySnapshot) => {
-      const firebaseEvents: FirebaseEvent[] = [];
-      querySnapshot.forEach((doc: QueryDocumentSnapshot) => {
-        firebaseEvents.push({ data: doc.data(), id: doc.id });
-      });
-      setEvents((prevEvents) => [...(prevEvents || []), ...firebaseEvents]);
-      setLoading(false);
-      console.log('These are the user events:', firebaseEvents);
+    const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
 
-      // Get the last document's snapshot for the next batch
-      const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
-      if (lastDocument) {
-        // lastDocSnapshot = lastDocument; // Update lastDocSnapshot
-        setLastDocSnapshot(lastDocument)
-      }
+    const firebaseEvents: FirebaseEvent[] = [];
 
+    querySnapshot.forEach((doc) => {
+      firebaseEvents.push({ data: doc.data(), id: doc.id });
     });
 
-    return () => unsubscribe();
+    setEvents((prevEvents) => [...(prevEvents || []), ...firebaseEvents]);
+    setLoading(false);
+    console.log('These are the user events:', firebaseEvents);
+
+    // Get the last document's snapshot for the next batch
+    const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+    if (lastDocument) {
+      // lastDocSnapshot = lastDocument; // Update lastDocSnapshot
+      setLastDocSnapshot(lastDocument);
+    }
   } catch (e) {
     console.error(e);
-    // return errorMessage(error)
+    // Handle error
   }
 };
 
-export const getCategoryEvents = async (category: string, setEvents: (events: FirebaseEvent[]) => void, limitValue = 4) => {
+export const getCategoryEvents = async (
+  setEvents: Dispatch<SetStateAction<FirebaseEvent[] | undefined>>,
+  setLoading: Dispatch<SetStateAction<boolean>>,
+  lastDocSnapshot: QueryDocumentSnapshot<DocumentData> | null,
+  setLastDocSnapshot: Dispatch<SetStateAction<QueryDocumentSnapshot<DocumentData> | null>>,
+  category: string
+) => {
   try {
-    const q = query(collection(db, 'events'), where('eventCategory', '==', category), limit(limitValue));
+    const batchSize = 8;
+
+    // Define the base query for the specified category
+    const baseQuery = query(
+      collection(db, 'events'),
+      where('eventCategory', '==', category),
+      where('isApproved', '==', true),
+      orderBy('eventDate'),
+      limit(batchSize)
+    );
+
+    // If lastDocSnapshot is provided, adjust the query to start after it
+    const q = lastDocSnapshot
+      ? query(
+          baseQuery,
+          startAfter(lastDocSnapshot)
+        )
+      : baseQuery;
+
+    // Fetch the data once for the specified category
+    const querySnapshot = await getDocs(q);
+
+    const firebaseEvents: FirebaseEvent[] = querySnapshot.docs.map((doc) => {
+      return { data: doc.data(), id: doc.id };
+    });
+
+    console.log('This is the firebase events', firebaseEvents);
+
+    // Combine existing events with new events, filtering out duplicates by ID
+    setEvents((prevEvents) => {
+      if (!prevEvents) {
+        return firebaseEvents;
+      }
+
+      // Create a Set to store unique event IDs
+      const uniqueEventIds = new Set(prevEvents.map((event) => event.id));
+
+      // Filter the new events to exclude duplicates by ID
+      const filteredFirebaseEvents = firebaseEvents.filter(
+        (event) => !uniqueEventIds.has(event.id)
+      );
+
+      // Concatenate the filtered new events with the existing events
+      const combinedEvents = [...prevEvents, ...filteredFirebaseEvents];
+
+      return combinedEvents;
+    });
+
+    setLoading(false);
+
+    // Get the last document's snapshot for the next batch
+    const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+    if (lastDocument) {
+      setLastDocSnapshot(lastDocument);
+    }
+  } catch (e) {
+    console.error(e);
+    // Handle the error
+  }
+};
+
+export const getSimilarEvents = async (category: string, setEvents: (events: FirebaseEvent[]) => void) => {
+  try {
+    const q = query(collection(db, 'events'), where('eventCategory', '==', category), limit(4));
 
     const querySnapshot = await getDocs(q);
     const firebaseEvents: FirebaseEvent[] = [];
@@ -141,25 +237,7 @@ export const getCategoryEvents = async (category: string, setEvents: (events: Fi
       firebaseEvents.push({ data: doc.data(), id: doc.id });
     });
 
-    return setEvents(firebaseEvents);
-
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-export const getSimilarEvents = async (category: string, setEvents: (events: FirebaseEvent[]) => void, limitValue = 4) => {
-  try {
-    const q = query(collection(db, 'events'), where('eventCategory', '==', category), limit(limitValue));
-
-    const querySnapshot = await getDocs(q);
-    const firebaseEvents: FirebaseEvent[] = [];
-
-    querySnapshot.forEach((doc) => {
-      firebaseEvents.push({ data: doc.data(), id: doc.id });
-    });
-
-    return setEvents(firebaseEvents);
+    setEvents(firebaseEvents);
 
   } catch (error) {
     console.error(error);

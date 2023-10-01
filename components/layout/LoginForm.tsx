@@ -68,24 +68,6 @@ const SignupForm = () => {
     return closeModal()
   }
 
-  // const openSignInModal = async () => {
-  //   const { Modal } = await import("tw-elements")
-  //   const myModal = Modal.getInstance(document.getElementById("signinModal"))
-  //   return myModal.show()
-  // }
-
-  // useEffect(() => {
-  //   // Function to check if the URL ends with #signin and call openSignInModal
-  //   const checkUrlForSignIn = () => {
-  //     if (window.location.hash === "#signin") {
-  //       openSignInModal();
-  //     }
-  //   };
-
-  //   // Call checkUrlForSignIn when the component mounts
-  //   checkUrlForSignIn();
-  // }, []);
-
   return (
     <section
       className="mb-8 md:mb-8 md:min-h-screen"

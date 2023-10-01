@@ -8,7 +8,7 @@ import { DateInput } from '../global/DateInput';
 import { TimeInput } from '../global/TimeInput';
 import { TextArea } from '../global/TextArea';
 import { errorMessage } from '@/firebase/error_message';
-import addData from '@/firebase/firestore/add_data';
+import {addData} from '@/firebase/firestore/add_data';
 import { successMessage } from '@/firebase/success_message';
 import { useAuthContext } from '@/context/AuthContext';
 import { convertToTimestamp, createSlug, makePrice, validateEmail, validatePhoneNumber, validatePrice, validateUrl } from '@/utils/func';
@@ -24,6 +24,7 @@ const CreateEventForm = () => {
   const [organizerEmail, setOrganizerEmail] = useState('');
   const [organizerNumber, setOrganizerNumber] = useState('');
   const [organizerWebsite, setOrganizerWebsite] = useState('');
+  const [organizerDescription, setOrganizerDescription] = useState('');
   const [eventName, setEventName] = useState('');
   const [eventCategory, setEventCategory] = useState('');
   const [eventPrice, setEventPrice] = useState('');
@@ -58,6 +59,10 @@ const CreateEventForm = () => {
 
     if (!validateUrl(organizerWebsite)) {
       return errorMessage("Organizer's website url is empty or invalid.");
+    }
+
+    if(organizerDescription.length < 50) {
+      return errorMessage("About organizer must not be empty and should be more than 50 characters");
     }
 
     if(eventName.length < 3) {
@@ -116,6 +121,7 @@ const CreateEventForm = () => {
       organizerEmail,
       organizerNumber,
       organizerWebsite,
+      organizerDescription,
       eventName,
       eventCategory,
       eventPrice,
@@ -126,12 +132,13 @@ const CreateEventForm = () => {
       eventAddress,
       eventDescription,
       slug: createSlug(eventName),
+      twitter,
+      instagram,
+      linkedIn,
       isApproved: true
     }
 
     console.log('data to be sent to firebase', data)
-
-    setLoading(false)
 
     const { result, error } = await addData('events', data)
 
@@ -160,17 +167,32 @@ const CreateEventForm = () => {
 
   }
   
-  
+  useEffect(() => {
+    if (user == null) router.push("/")
+  }, [user])
 
+  // useEffect(() => {
+  //   const init = async () => {
+  //     const {  Datepicker, Timepicker, Select, initTE } = await import("tw-elements");
+  //     initTE({ Datepicker, Timepicker, Select});
+  //     console.log('Launching date picker in create event form', 'I am still rendering')
+  //   };
+  //   // init();
+
+  // }, []);
 
   useEffect(() => {
-    const init = async () => {
-      const {  Datepicker, Timepicker, Select, initTE } = await import("tw-elements");
-      initTE({ Datepicker, Timepicker, Select});
-    };
-    init();
-
+    // Check if the URL ends with "/create-event"
+    if (window.location.pathname.endsWith("/create-event")) {
+      const init = async () => {
+        const { Datepicker, Timepicker, Select, initTE } = await import("tw-elements");
+        initTE({ Datepicker, Timepicker, Select });
+        console.log('Launching date picker in create event form', 'I am still rendering')
+      };
+      init();
+    }
   }, []);
+  
 
 
   return (
@@ -243,6 +265,19 @@ const CreateEventForm = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
+                  {/* About Organizer input */}
+                <div className="mb-1">
+                  <TextArea 
+                    label="About Organizer" 
+                    type="text" 
+                    rules={(val: string) => val.length < 50 }
+                    errorMessage='About organizer cannot be less than 50 chacracters'
+                    handleChange={(val) => setOrganizerDescription(val)} 
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
                 {/* Event Name input */}
                 <div className="mb-1">
                   <Input 
@@ -272,7 +307,7 @@ const CreateEventForm = () => {
                     handleChange={(val) => {
                       if(makePrice(val) === 'free') {
                         setEventPrice('free')
-                        setEventPriceAmount('free')
+                        setEventPriceAmount('0')
                       } else if(makePrice(val) === 'paid') {
                         setEventPrice('paid')
                         setEventPriceAmount(val)
@@ -373,7 +408,6 @@ const CreateEventForm = () => {
                 </div>
 
               </div>
-
               
               {/* Submit button */}
               <div

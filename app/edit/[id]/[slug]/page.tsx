@@ -17,7 +17,7 @@ export default function EditEvent( { params: { id } }: { params: { id: string } 
 
   useEffect(() => {
     if (user == null) router.push("/")
-}, [user])
+  }, [user])
 
 
 useEffect(() => {
@@ -54,13 +54,14 @@ useEffect(() => {
         (
         <>
           <EditEventForm 
-            id={event?.id} 
+            id={id} 
             slug={event?.slug}  
             imageUrl={event?.eventBanner} 
             name={event?.organizerName} 
             email={event?.organizerEmail} 
             number={event?.organizerNumber} 
             website={event?.organizerWebsite} 
+            aboutOrganizer={event?.organizerDescription}
             title={event?.eventName} 
             date={event?.eventDate} 
             time={event?.eventTime} 

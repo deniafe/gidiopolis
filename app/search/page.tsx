@@ -1,6 +1,8 @@
 "use client";
 import SearchResultBar from "@/components/event/SearchResultBar";
 import SimilarEvent from "@/components/event/SimilarEvent";
+import { Spinner } from "@/components/global/Loading";
+import { Empty } from "@/components/icons/Empty";
 import { FirebaseEvent, getCategoryEvents, SearchOptions as ISearchOptions, searchEvents } from "@/firebase/firestore/get_data";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -83,9 +85,38 @@ export default function Event() {
 
   return (
     <main className="bg-white md:pt-32 md:px-[2rem]">
-         <SearchResultBar />
-         <div id="scroll" className="h-40" ></div>
-          <SimilarEvent title={'Search Result'} firebaseEvents={events}/>
+      <SearchResultBar />
+      <div id="scroll" className="h-40" ></div>
+      {loading ? (
+      <div
+          className="text-my-primary h-96"
+          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Spinner />
+        </div>
+      ) : (
+        <>
+          {events && events.length === 0 ? (
+            <div>
+              <div
+                className="text-my-primary md:mt-12 md:mb-8"
+                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              >
+                <Empty />
+              </div>
+              <p className="text-center mb-32" >No data available</p>
+            </div>
+          ) : 
+          (
+            <>
+              <SimilarEvent title={'Search Result'} firebaseEvents={events}/>
+            </>
+          )
+          }
+        </>
+        
+      )}
+          
     </main>
   )
 }

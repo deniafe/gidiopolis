@@ -1,66 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchInput from './SearchInput';
 import SearchOptions from './SearchOptions';
 import { SearchParameters, buildSearchURL } from '@/utils/func';
+import SearchInput2 from './SearchInput2';
+import { useSearchEventContext } from '@/context/SearchEventContext'
 
 const SearchModal = () => {
-  const [query, setQuery] = useState('')
-  const [category, setCategory] = useState('')
-  const [when, setWhen] = useState('')
-  const [where, setWhere] = useState('')
-  const [price, setPrice] = useState('')
-  const [searchUrl, setSearchUrl] = useState('/')
+  const { searchUrl, setSearchUrl, searchOptions, setSearchOptions } = useSearchEventContext()
 
+  const [query, setQuery] = useState('')
   let urlOptions: SearchParameters = {}
 
   const handleQuery = (query: string) => {
     setQuery(query)
     urlOptions.query = query
-    urlOptions.category = category
-    urlOptions.date = when
-    urlOptions.venue = where
-    urlOptions.price = price
+    urlOptions.category = searchOptions?.category
+    urlOptions.date = searchOptions?.when
+    urlOptions.venue = searchOptions?.where
+    urlOptions.price = searchOptions?.price
     setSearchUrl(buildSearchURL(urlOptions))
   }
 
   const handleCategory = (category: string) => {
-    setCategory(category)
-    urlOptions.query = query
-    urlOptions.category = category
-    urlOptions.date = when
-    urlOptions.venue = where
-    urlOptions.price = price
-    setSearchUrl(buildSearchURL(urlOptions))
+    setSearchOptions((prevSearchOptions) => ({
+      ...prevSearchOptions,
+      category
+    }))
   }
 
   const handleWhen = (when: string) => {
-    setWhen(when)
-    urlOptions.query = query
-    urlOptions.category = category
-    urlOptions.date = when
-    urlOptions.venue = where
-    urlOptions.price = price
-    setSearchUrl(buildSearchURL(urlOptions))
+    setSearchOptions((prevSearchOptions) => ({
+      ...prevSearchOptions,
+      when
+    }))
   }
 
   const handleWhere = (where: string) => {
-    setWhere(where)
-    urlOptions.query = query
-    urlOptions.category = category
-    urlOptions.date = when
-    urlOptions.venue = where
-    urlOptions.price = price
-    setSearchUrl(buildSearchURL(urlOptions))
+    setSearchOptions((prevSearchOptions) => ({
+      ...prevSearchOptions,
+      where
+    }))
   }
 
   const handlePrice = (price: string) => {
-    setPrice(price)
-    urlOptions.query = query
-    urlOptions.category = category
-    urlOptions.date = when
-    urlOptions.venue = where
-    urlOptions.price = price
-    setSearchUrl(buildSearchURL(urlOptions))
+   setSearchOptions((prevSearchOptions) => ({
+      ...prevSearchOptions,
+      price
+    }))
   }
 
   const closeModal = async () => {
@@ -68,6 +54,17 @@ const SearchModal = () => {
       const myModal = Modal.getInstance(document.getElementById("exampleModalFullscreen"))
       myModal.hide()
   }
+
+  useEffect(() => {
+
+    urlOptions.query = query
+    urlOptions.category = searchOptions?.category
+    urlOptions.date = searchOptions?.when
+    urlOptions.venue = searchOptions?.where
+    urlOptions.price = searchOptions?.price
+    setSearchUrl(buildSearchURL(urlOptions))
+
+  }, [searchOptions]);
 
   return (
     <div
@@ -100,7 +97,8 @@ const SearchModal = () => {
           </div>
           <div className="relative p-4 min-[0px]:overflow-y-auto">
           <div className="mb-3 mt-8 justify-center flex">
-            <SearchInput closeModal={closeModal} handleQuery={handleQuery} searchUrl={searchUrl}/>
+            {/* <SearchInput closeModal={closeModal} handleQuery={handleQuery} searchUrl={searchUrl}/> */}
+            <SearchInput2 closeModal={closeModal} handleQuery={handleQuery} searchUrl={searchUrl}/>
           </div>
           <SearchOptions handleCategory={handleCategory} handleWhen={handleWhen} handleWhere={handleWhere} handlePrice={handlePrice} />
           </div>

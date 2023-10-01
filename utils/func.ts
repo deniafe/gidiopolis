@@ -151,6 +151,21 @@ export function convertToTimestamp(dateString: string): Timestamp | null {
   return timestamp;
 }
 
+export function formatDateFromTimestamp(timestamp: Timestamp): string {
+  const jsDate = timestamp.toDate();
+  const day = String(jsDate.getDate()).padStart(2, '0');
+  const month = String(jsDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+  const year = jsDate.getFullYear();
+  
+  return `${day}/${month}/${year}`;
+}
+
+export function isFirebaseStorageUrl(input: string): boolean {
+  const firebaseStorageRegex = /firebasestorage\.googleapis\.com/i;
+  return firebaseStorageRegex.test(input);
+}
+
+
 export function validateEmail(email: string) {
   return validator.isEmail(email)
 } 
@@ -169,11 +184,14 @@ export function validatePrice(inputString: string) {
   const cleanedInput = inputString.trim().toLowerCase();
   const parsedNumber = parseFloat(cleanedInput);
 
-  if (!isNaN(parsedNumber) && parsedNumber > 0) {
+  if (!isNaN(parsedNumber) && parsedNumber >= 0) {
     return true;
-  } else if (cleanedInput === 'free') {
+  } else if ( cleanedInput.length > 0 && cleanedInput === 'free') {
     return true;
-  } else {
+  } else if ( !cleanedInput) {
+    return false
+  }
+  else {
     return false;
   }
 }

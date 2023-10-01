@@ -5,7 +5,7 @@ export const Tech = () => (
     </g>
     <defs>
     <clipPath id="clip0_420_552">
-    <rect width="20" height="20" fill="white" transform="translate(0.666748 0.5)"/>
+    <rect width="24" height="24" fill="white" transform="translate(0.666748 0.5)"/>
     </clipPath>
     </defs>
   </svg>

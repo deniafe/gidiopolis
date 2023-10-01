@@ -70,7 +70,7 @@ const UserEventCard: React.FC<ReusableCardProps> = ({ id, slug, imageUrl, title,
           </div>
           
           <div className='flex justify-end ' >
-            <Link
+            <a
               href={`/edit/${id}/${slug}`}
             >
               <button
@@ -78,7 +78,7 @@ const UserEventCard: React.FC<ReusableCardProps> = ({ id, slug, imageUrl, title,
                 className="inline-block rounded-full bg-neutral-50 px-3 py-3 mr-4 text-xs font-medium uppercase leading-normal text-my-primary shadow-[0_4px_9px_-4px_#cbcbcb] transition duration-150 ease-in-out hover:bg-neutral-100 hover:shadow-[0_8px_9px_-4px_rgba(203,203,203,0.3),0_4px_18px_0_rgba(203,203,203,0.2)] focus:bg-neutral-100 focus:shadow-[0_8px_9px_-4px_rgba(203,203,203,0.3),0_4px_18px_0_rgba(203,203,203,0.2)] focus:outline-none focus:ring-0 active:bg-neutral-200 active:shadow-[0_8px_9px_-4px_rgba(203,203,203,0.3),0_4px_18px_0_rgba(203,203,203,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(251,251,251,0.3)] dark:hover:shadow-[0_8px_9px_-4px_rgba(251,251,251,0.1),0_4px_18px_0_rgba(251,251,251,0.05)] dark:focus:shadow-[0_8px_9px_-4px_rgba(251,251,251,0.1),0_4px_18px_0_rgba(251,251,251,0.05)] dark:active:shadow-[0_8px_9px_-4px_rgba(251,251,251,0.1),0_4px_18px_0_rgba(251,251,251,0.05)]">
                 <Edit />
               </button>
-            </Link>
+            </a>
             <button
               type="button"
               data-te-toggle="modal"

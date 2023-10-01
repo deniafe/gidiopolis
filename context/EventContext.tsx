@@ -1,14 +1,19 @@
 // "use client";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { FirebaseEvent, getEvents, getCategoryEvents  } from '@/firebase/firestore/get_data';
-import { DocumentSnapshot } from 'firebase/firestore';
+import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from 'firebase/firestore';
 
 // Define the types for the context
 interface EventContextData {
   firebaseEvents: FirebaseEvent[] | undefined;
+  selectedCategory: string;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
-  getCategory: (category: string) => Promise<void>;
+  getCategory: () => Promise<void>
+  getAllEvents: () => Promise<void>
+  getAllCategoryEvents: () => Promise<void>
   setCurrentCount: React.Dispatch<React.SetStateAction<number>>
+  lastDocSnapshot: QueryDocumentSnapshot<DocumentData, DocumentData> | null
 }
 
 interface EventContextProviderProps {
@@ -27,37 +32,46 @@ export const useEventContext = (): EventContextData => {
 
 export const EventContextProvider: React.FC<EventContextProviderProps> = ({ children }) => {
   const [firebaseEvents, setFirebaseEvents] = useState<FirebaseEvent[]>();
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [loading, setLoading] = useState(true);
   const [currentCount, setCurrentCount] = useState(0);
-  const [lastDocSnapshot, setLastDocSnapshot] = useState<DocumentSnapshot | null>(null); // Initialize lastDocSnapshot
+  const [lastDocSnapshot, setLastDocSnapshot] = useState<QueryDocumentSnapshot | null>(null); // Initialize lastDocSnapshot
+
+  const getAllEvents = async (lastDocSnap = lastDocSnapshot) => {
+    getEvents(setFirebaseEvents, setLoading, lastDocSnap, setLastDocSnapshot);
+  }
+
+  const getAllCategoryEvents = async (lastDocSnap = lastDocSnapshot) => {
+    getCategoryEvents(setFirebaseEvents, setLoading, lastDocSnap, setLastDocSnapshot, selectedCategory);
+  } 
 
 
-
-  const getCategory = async (category: string) => {
-
+  const getCategory = async () => {
+    console.log('This is the curent category', selectedCategory, lastDocSnapshot, firebaseEvents);
+    setLoading(true);
     setLastDocSnapshot(null)
     setFirebaseEvents([])
-    setLastDocSnapshot(null)
     setCurrentCount(0)
 
-    if (category === 'All') {
-      getEvents(setFirebaseEvents, setLoading, lastDocSnapshot, setLastDocSnapshot, currentCount);
+    if (selectedCategory === 'All') {
+      getAllEvents(null);
       return;
     }
-    setLoading(true);
-    await getCategoryEvents(category, setFirebaseEvents, 8);
-    setLoading(false);
-  };
 
-  useEffect(() => {
-    getEvents(setFirebaseEvents, setLoading, lastDocSnapshot, setLastDocSnapshot, currentCount);
-  }, [currentCount]);
+    getAllCategoryEvents(null)
+    // setLoading(false);
+  };
 
   const contextValue: EventContextData = {
     firebaseEvents,
+    selectedCategory,
+    setSelectedCategory,
     loading,
     getCategory,
+    getAllEvents,
+    getAllCategoryEvents,
     setCurrentCount,
+    lastDocSnapshot
   };
 
   return (

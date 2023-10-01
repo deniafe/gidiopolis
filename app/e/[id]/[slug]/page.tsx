@@ -1,7 +1,9 @@
 "use client";
 import Hero from "@/components/event/Hero";
 import SimilarEvent from "@/components/event/SimilarEvent";
-import { FirebaseEvent, getCategoryEvents, getDocument } from "@/firebase/firestore/get_data";
+import { errorMessage } from "@/firebase/error_message";
+import { FirebaseEvent, getSimilarEvents as getEvents, getDocument } from "@/firebase/firestore/get_data";
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 
 export default function Event( { params: { id } }: { params: { id: string } } ) {
@@ -9,8 +11,10 @@ export default function Event( { params: { id } }: { params: { id: string } } ) 
   const [events, setEvents] = useState<FirebaseEvent[]>();
   const [loading, setLoading] = useState(true);
 
+  const router = useRouter()
+
   const getSimilarEvents = async (category: string) => {
-    await getCategoryEvents(category, setEvents)
+    await getEvents(category, setEvents)
   }
 
   useEffect(() => {
@@ -20,12 +24,17 @@ export default function Event( { params: { id } }: { params: { id: string } } ) 
       const data = result?.data
       const error = data?.error
 
-      if (error) {
-        return setLoading(false)
+      console.log('There is an data', result)
+
+      if (result.error) {
+        console.log('There is an error', error)
+        setLoading(false)
+        errorMessage('Event does not exist ❌')
+        return router.push("/")
       }
       getSimilarEvents(data.eventCategory)
-      setEvent(data)
-      return setLoading(true)
+      setEvent(result.data)
+      return setLoading(false)
     };
     init();
   }, []);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { categories, links } from '@/utils/constants';
+import { company, resources } from '@/utils/constants';
 import { Facebook } from '../icons/Facebook';
 import { Instagram } from '../icons/Instagram';
 import { LinkedIn } from '../icons/LinkedIn';
@@ -72,12 +72,12 @@ const Footer = () => {
           {/* Products section */}
           <div>
             <h6 className="mb-8 flex justify-center font-semibold uppercase md:justify-start">
-              Event Categories
+              Company
             </h6>
-            {categories.map((category, index) => (
+            {company.map((link, index) => (
               <p key={index} className="mb-6">
               <a href="#!" className="dark:text-neutral-600 text-white">
-                {category.title}
+                {link.title}
               </a>
             </p>
             ))}
@@ -86,9 +86,9 @@ const Footer = () => {
           {/* Products section */}
           <div>
             <h6 className="mb-8 flex justify-center font-semibold uppercase md:justify-start">
-              Links
+              Resources
             </h6>
-            {links.map((link, index) => (
+            {resources.map((link, index) => (
               <p key={index} className="mb-6">
               <a href="#!" className="dark:text-neutral-600 text-white">
                 {link.title}

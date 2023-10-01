@@ -4,10 +4,11 @@ import PrimaryButton from '../global/PrimaryButton'
 import { useEventContext } from '@/context/UserEventContext'
 
 const UserEvents = () => {
-  const { userEvents, setCurrentCount } = useEventContext()
+  const { getEvents, userEvents, setCurrentCount } = useEventContext()
 
-  const handleShowMore = () => {
+  const handleShowMore = () => { 
     setCurrentCount((prevCount: number) => prevCount + 8)
+    getEvents()
   }
   
 

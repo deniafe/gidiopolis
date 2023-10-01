@@ -9,15 +9,21 @@ interface LatestEventProps {
 }
 
 const LatestEvent = () => {
-  const { firebaseEvents, setCurrentCount } = useEventContext()
+  const { firebaseEvents, setCurrentCount, getAllEvents, getAllCategoryEvents, selectedCategory } = useEventContext()
 
   const handleButtonClick = (event: React.MouseEvent<HTMLDivElement>) => {
     console.log("Button clicked from parent component!");
     // Additional logic or state changes can be performed here
   };
 
-  const handleShowMore = () => {
-    setCurrentCount((prevCount: number) => prevCount + 8);
+  const handleShowMore = async () => {
+    if(selectedCategory === 'All') {
+      setCurrentCount((prevCount: number) => prevCount + 8);
+      await getAllEvents()
+    } else {
+      await getAllCategoryEvents()
+    }
+    
   };
   
 

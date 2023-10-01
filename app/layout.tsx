@@ -10,10 +10,12 @@ import SignInModal from '@/components/layout/SignInModal'
 import { AuthContextProvider } from '@/context/AuthContext'
 import { EventContextProvider } from '@/context/EventContext'
 import { UserEventContextProvider } from '@/context/UserEventContext'
+import { SearchEventContextProvider } from '@/context/SearchEventContext'
 import { ResetModal } from '@/components/global/ResetPasswordModal'
 import CreateEventModal from '@/components/event/CreateEventModal'
 import HomeSearch from '@/components/home/HomeSearch'
 import { ConfirmDelete } from '@/components/user_event/ConfirmDelete'
+import { ProfileModal } from '@/components/global/ProfileModal'
 
 export default function RootLayout({
   children,
@@ -32,18 +34,21 @@ export default function RootLayout({
           <AuthContextProvider>
             <EventContextProvider>
               <UserEventContextProvider>
-                <Navbar />
-                <main>
-                  {children}
-                </main>
-                <Footer />
-                <SignupModal />
-                <SignInModal />
-                <ResetModal />
-                <HomeSearch />
-                <CreateEventModal />
-                <ConfirmDelete />
-                <ToastContainer />
+                <SearchEventContextProvider>
+                  <Navbar />
+                  <main>
+                    {children}
+                  </main>
+                  <Footer />
+                  <SignupModal />
+                  <SignInModal />
+                  <ResetModal />
+                  <ProfileModal />
+                  <HomeSearch />
+                  <CreateEventModal />
+                  <ConfirmDelete />
+                  <ToastContainer />
+                </SearchEventContextProvider>
               </UserEventContextProvider>
             </EventContextProvider>
           </AuthContextProvider>

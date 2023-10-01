@@ -1,33 +1,27 @@
-import { ResetPassword } from '@/firebase/auth/signin';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Loading } from './Loading';
+import { ResetPassword } from '@/firebase/auth/signin';
 
-export const ResetModal = () => {
+export const ProfileModal = () => {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
 
   const closeModal = async () => {
     const { Modal } = await import("tw-elements")
-    const myModal = Modal.getInstance(document.getElementById("resetModal"))
+    const myModal = Modal.getInstance(document.getElementById("profileModal"))
     setLoading(false)
     return myModal.hide()
   }
 
-  const sendResetEmail = async (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault()
+  const openResetModal = async () => {
+    const { Modal } = await import("tw-elements")
+    const myModal = Modal.getInstance(document.getElementById("resetModal"))
+    return myModal.show()
+  }
 
-    setLoading(true)
-
-    const { error } = await ResetPassword(email)
-
-    if (error) {
-      setLoading(false)
-      return console.log(error)
-    }
-
-    setLoading(false)
-
-    return closeModal()
+  const resetPassword = () => {
+    closeModal()
+    // openResetModal()
   }
 
     return (
@@ -36,9 +30,9 @@ export const ResetModal = () => {
           <div
               data-te-modal-init
               className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-              id="resetModal"
+              id="profileModal"
               tabIndex={-1}
-              aria-labelledby="resetModalLabel"
+              aria-labelledby="profileModalLabel"
               aria-hidden="true"
           >
               <div
@@ -49,7 +43,7 @@ export const ResetModal = () => {
                       <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 dark:border-opacity-50">
                           {/* Modal title */}
                           <h5 className="text-xl font-medium leading-normal text-neutral-800 dark:text-neutral-200" id="exampleModalLabel">
-                              Forgot Password?
+                              Account Settings
                           </h5>
                           {/* Close button */}
                           <button
@@ -74,8 +68,18 @@ export const ResetModal = () => {
                       {/* Modal body */}
                       <div className="relative flex-auto p-4 px-6" data-te-modal-body-ref>
 
-                        <p className="text-sm pb-6">Enter the email address you used when you joined and we’ll send you instructions to reset your password.</p>
-                        <p className="text-sm pb-8">For security reasons, we do NOT store your password. So rest assured that we will never send your password via email.</p>
+                        <p className="text-sm pb-6">Update your profile information. Edit your name, email and password</p>
+                        
+                        <div className="mb-2"> 
+                          <small>Name</small>
+                          <input
+                            type="text"
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="bg-blue-50 w-full text-gray-800 peer block min-h-[auto] rounded-full py-[0.32rem] px-4 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-my-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                            id="exampleFormControlInput1"
+                            placeholder="Email address"
+                            />
+                        </div>
 
                         <div className="mb-2"> 
                           <small>Email Address</small>
@@ -87,18 +91,28 @@ export const ResetModal = () => {
                             placeholder="Email address"
                             />
                         </div>
+
+                        <div className="mt-8 mb-2">
+                        <button
+                          type="button"
+                          className="inline-block rounded-full border-2 border-primary-100 px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:border-primary-accent-100 hover:bg-neutral-500 hover:bg-opacity-10 focus:border-primary-accent-100 focus:outline-none focus:ring-0 active:border-primary-accent-200 dark:text-primary-100 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
+                          onClick={resetPassword}
+                          data-te-toggle="modal"
+                          data-te-target="#resetModal"
+                          data-te-ripple-init
+                          data-te-ripple-color="light"
+                          >
+                          Reset Password
+                        </button>
                         </div>
 
-                      {/* Email input */}
-                      {/* <div className="flex justify-center"> */}
-                        
-                      {/* </div> */}
+                        </div>
 
-                      <div className="flex justify-center border-t-2 border-neutral-100 border-opacity-100 p-4 dark:border-opacity-50">
+                      <div className="flex justify-center mb-8 mt-4 border-t-2 border-neutral-100 border-opacity-100 p-4 dark:border-opacity-50">
                           
                         <div
-                          onClick={sendResetEmail}
-                          className="inline-block text-center cursor-pointer w-3/4 rounded-full bg-my-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#31859C] transition duration-150 ease-in-out hover:bg-cyan-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-cyan-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-cyan-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
+                          // onClick={sendResetEmail}
+                          className="inline-block text-center cursor-pointer w-3/4 rounded-full bg-my-primary px-7 pb-2.5 pt-3 mt-4 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#31859C] transition duration-150 ease-in-out hover:bg-cyan-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-cyan-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-cyan-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                           data-te-ripple-init
                           data-te-ripple-color="light"
                         >
@@ -107,7 +121,7 @@ export const ResetModal = () => {
                           (<Loading />) :
                           (
                             <span>
-                                Send Reset Email
+                                Update Settings
                             </span>
                           )
                         }
