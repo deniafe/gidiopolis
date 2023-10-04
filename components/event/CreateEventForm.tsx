@@ -166,10 +166,6 @@ const CreateEventForm = () => {
     }
 
   }
-  
-  useEffect(() => {
-    if (user == null) router.push("/")
-  }, [user])
 
   // useEffect(() => {
   //   const init = async () => {

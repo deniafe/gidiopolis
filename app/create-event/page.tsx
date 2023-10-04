@@ -12,7 +12,7 @@ export default function CreateEvent() {
 
   useEffect(() => {
     if (user == null) router.push("/")
-}, [user])
+  }, [user])
   
   return (
     <>

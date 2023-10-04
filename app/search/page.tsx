@@ -11,30 +11,6 @@ export default function Event() {
   const [events, setEvents] = useState<FirebaseEvent[]>();
   const [loading, setLoading] = useState(true);
 
-  const [searchUrl, setSearchUrl] = useState('/')
-
-
-  const handleQuery = (query: string) => {
-    // setQuery(query)
-  }
-
-  const handleCategory = (category: string) => {
-    // setCategory(category)
-  }
-
-  const handleWhen = (when: string) => {
-    // setWhen(when)
-  }
-
-  const handleWhere = (where: string) => {
-    // setWhere(where)
-  }
-
-  const handlePrice = (price: string) => {
-    // setPrice(price)
-  }
-
-
   const searchParams = useSearchParams()
   const query = searchParams.get("query")
   const category = searchParams.get("category")
@@ -84,7 +60,7 @@ export default function Event() {
   }, []); 
 
   return (
-    <main className="bg-white md:pt-32 md:px-[2rem]">
+    <main className="bg-white pt-16 md:pt-32 md:px-[2rem]">
       <SearchResultBar />
       <div id="scroll" className="h-40" ></div>
       {loading ? (

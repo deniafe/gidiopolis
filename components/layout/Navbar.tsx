@@ -1,10 +1,8 @@
 "use client";
-import Image from 'next/image'
 import { useEffect } from "react";
 import { Logo } from '../icons/Logo';
 import PrimaryButton from '../global/PrimaryButton';
 import TextButton from '../global/TextButton';
-import { categories } from '@/utils/constants';
 import { useAuthContext } from "@/context/AuthContext";
 import { UserMenu } from '../global/UserMenu';
 import { useEventContext } from '@/context/EventContext'
@@ -19,10 +17,6 @@ const Navbar = () => {
     console.log("Button clicked from parent component!");
     // Additional logic or state changes can be performed here
   };
-
-  // useEffect(() => {
-  //   if (user == null) router.push("/")
-  // }, [user])
 
   useEffect(() => {
     const init = async () => {

@@ -4,6 +4,7 @@ import SimilarEvent from "@/components/event/SimilarEvent";
 import { errorMessage } from "@/firebase/error_message";
 import { FirebaseEvent, getSimilarEvents as getEvents, getDocument } from "@/firebase/firestore/get_data";
 import { useRouter } from "next/navigation"
+import { useAuthContext } from "@/context/AuthContext"
 import { useEffect, useState } from "react";
 
 export default function Event( { params: { id } }: { params: { id: string } } ) {
@@ -12,10 +13,15 @@ export default function Event( { params: { id } }: { params: { id: string } } ) 
   const [loading, setLoading] = useState(true);
 
   const router = useRouter()
+  const { user } = useAuthContext()
 
   const getSimilarEvents = async (category: string) => {
     await getEvents(category, setEvents)
   }
+
+  useEffect(() => {
+    if (user == null) router.push("/")
+  }, [user])
 
   useEffect(() => {
     setLoading(true)

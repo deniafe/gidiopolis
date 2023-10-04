@@ -468,7 +468,7 @@ const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, titl
                   (<Loading />) :
                   (
                     <span>
-                      Edit Event
+                      Update Event
                     </span>
                   )
                 }
