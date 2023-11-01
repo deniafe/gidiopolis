@@ -20,10 +20,6 @@ export default function Event( { params: { id } }: { params: { id: string } } ) 
   }
 
   useEffect(() => {
-    if (user == null) router.push("/")
-  }, [user])
-
-  useEffect(() => {
     setLoading(true)
     const init = async () => {
       const result = await getDocument('events', id)

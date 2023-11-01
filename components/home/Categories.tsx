@@ -21,7 +21,7 @@ const categories: Category[] = [
   { label: 'Arts & Culture', icon: <Arts /> },
   { label: 'Music/Concert', icon: <Concert /> },
   { label: 'Night Life', icon: <NightLife /> },
-  { label: 'Pubic Sector & Policy', icon: <PublicSector /> },
+  { label: 'Public Sector & Policy', icon: <PublicSector /> },
   { label: 'Business & Economy', icon: <BusinessEconomy /> },
   { label: 'Religious', icon: <Religious /> },
   { label: 'Kids', icon: <Kids /> },
