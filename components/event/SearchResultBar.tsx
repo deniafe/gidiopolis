@@ -1,4 +1,5 @@
-"use client";
+'use client'
+
 import SimilarEvent from "@/components/event/SimilarEvent";
 import SearchInput2 from "@/components/home/SearchInput2";
 import SearchOptions from "@/components/home/SearchOptions";

@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Upload } from '../icons/Upload';
 import { cutOffLongStrings } from '@/utils/func';

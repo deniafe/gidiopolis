@@ -74,7 +74,7 @@ export default function Home() {
               >
                 <Empty />
               </div>
-              <p className="text-center mb-16" >No data available</p>
+              <p className="text-center mt-4 mb-16" >No data available</p>
             </div>
           ) : 
           (

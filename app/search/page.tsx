@@ -80,7 +80,7 @@ export default function Event() {
               >
                 <Empty />
               </div>
-              <p className="text-center mb-32" >No data available</p>
+              <p className="text-center mt-4 mb-32" >No data available</p>
             </div>
           ) : 
           (

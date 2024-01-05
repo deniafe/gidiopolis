@@ -1,8 +1,10 @@
-// "use client";
+'use client'
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { FirebaseEvent, getUserEvents  } from '@/firebase/firestore/get_data';
 import { DocumentSnapshot } from 'firebase/firestore';
 import { useAuthContext } from "./AuthContext";
+import { User } from 'firebase/auth';
 
 interface EventDelete {
   eventName: string;

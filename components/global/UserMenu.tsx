@@ -1,17 +1,13 @@
+'use client'
+
 import { useAuthContext } from '@/context/AuthContext';
 import { signOutUser } from '@/firebase/auth/signin';
-import { successMessage } from '@/firebase/success_message';
 import { getInitials } from '@/utils/func';
 import Link from 'next/link';
 import React, {useEffect } from 'react'
 
 export const UserMenu = () => {
   const { user } = useAuthContext()
-
-  const signout = async () => {
-    await signOutUser()
-    return successMessage("Sign out successful")
-  }
 
   useEffect(() => {
     const init = async () => {
@@ -50,22 +46,23 @@ export const UserMenu = () => {
           </p>
         </li>
         <li>
-          <a
+          <Link
             className="block w-full whitespace-nowrap bg-transparent px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-neutral-100 active:text-neutral-800 active:no-underline disabled:pointer-events-none disabled:bg-transparent disabled:text-neutral-400 dark:text-neutral-200 dark:hover:bg-neutral-600"
             href={`/user/events`}
             data-te-dropdown-item-ref
+            prefetch={false}
           >
             Manage My Events
-          </a>
+          </Link>
         </li>
         <li>
-          <a
+          <div
             className="block w-full whitespace-nowrap bg-transparent px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-neutral-100 active:text-neutral-800 active:no-underline disabled:pointer-events-none disabled:bg-transparent disabled:text-neutral-400 dark:text-neutral-200 dark:hover:bg-neutral-600"
             data-te-dropdown-item-ref
-            onClick={signout}
+            onClick={signOutUser}
           >
             Sign Out
-          </a>
+          </div>
         </li>
       </ul>
     </div>

@@ -19,7 +19,7 @@ export default function CreateEvent() {
     <Head>
       <title>Create New Event | Gidiopolis</title>
     </Head>
-      <main className="bg-white pt-16 md:pt-32 md:pb-32 md:px-[2rem]">
+      <main className="bg-white pt-16 md:pt-32 md:px-[2rem]">
         <CreateEventForm />
       </main>
     </>

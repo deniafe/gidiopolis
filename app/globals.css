@@ -1,38 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Expletus+Sans&family=Montserrat+Alternates:wght@200;300;400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.leaflet-bottom,
+.leaflet-control,
+.leaflet-pane,
+.leaflet-top {
+  z-index: 0 !important;
 }
 
-/* body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.rdrInRange {
+  background-color: #31859c !important;
+}
+.rdrStartEdge, .rdrEndEdge {
+  background-color: #31859c !important;
+}
+.css-1igvx5z-timeSelected-time-TopBar, .css-rt16tf-timeSelected-time {
+  color: #398aa0 !important;
+}
+/* .rdrMonth {
+  width: 100% !important;
+}
+
+.rdrCalendarWrapper {
+  font-size: 16px !important;
+  width: 100% !important;
 } */
-
-body {
-  margin: 0;
-  overflow-x: hidden;
-  font-family: 'Montserrat Alternates';
-}
 
 ::-webkit-scrollbar {
   width: 2px;
@@ -46,10 +45,37 @@ body {
 /* HANDLE */
 ::-webkit-scrollbar-thumb {
   background: #31859C;
-  height: 10%;
+  /* height: 80px; */
 }
 
-button[id^="datepicker-toggle"] {
+/* Both Vertical and Horizontal Scrollbars */
+::-webkit-scrollbar {
+  width: 2px; /* Width of the scrollbar */
+  height: 2px; /* Height of the scrollbar for the horizontal scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.23); /* Track color */
+}
+
+/* Handle for Vertical Scrollbar */
+::-webkit-scrollbar-thumb {
+  background: #31859C; /* Thumb color for vertical scrollbar */
+}
+
+/* Handle for Horizontal Scrollbar */
+::-webkit-scrollbar-thumb:horizontal {
+  background: #31859C; /* Thumb color for horizontal scrollbar */
+}
+
+/* Corners */
+::-webkit-scrollbar-corner {
+  background: transparent; /* Color of the scrollbar corners */
+}
+
+
+/* button[id^="datepicker-toggle"] {
   width: 100%;
   height: 100%;
   justify-content: end;
@@ -67,7 +93,6 @@ button[id^="timepicker-toggle"] {
 }
 
 svg[fill="none"][viewBox="0 0 24 24"][stroke-width="1.5"][stroke="currentColor"] {
-  /* Your styles here */
   width: 16px;
   height: 16px;
-}
+} */

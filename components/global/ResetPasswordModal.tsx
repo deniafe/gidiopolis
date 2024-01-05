@@ -1,3 +1,5 @@
+'use client'
+
 import { ResetPassword } from '@/firebase/auth/signin';
 import React, { useState } from 'react';
 import { Loading } from './Loading';

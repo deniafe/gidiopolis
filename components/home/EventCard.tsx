@@ -1,6 +1,7 @@
-'use client'
+
 import { cutOffLongStrings, formatDate } from '@/utils/func';
 import Link from 'next/link';
+import Image from 'next/image';
 import React from 'react';
 import { Timestamp } from 'firebase/firestore';
 
@@ -9,22 +10,25 @@ interface ReusableCardProps {
   slug: string;
   imageUrl: string;
   title: string;
-  date: Timestamp;
+  date: {startDate: Timestamp, endDate: Timestamp, key: string};
   time: string;
-  venue: string;
-  state: string;
+  venue: {state: string, region: string, street: string, zoom: number, center: [number, number]};
   isFree: string;
   organizer: string;
 }
 
-const EventCard: React.FC<ReusableCardProps> = ({ id, slug, imageUrl, title, date, time, venue, state, isFree, organizer }) => {
+const EventCard: React.FC<ReusableCardProps> = ({ id, slug, imageUrl, title, date, time, venue, isFree, organizer }) => {
 
   return (
     <Link
     href={`/e/${id}/${slug}`}
       className="block cursor-pointer rounded w-[17rem] bg-white transition-shadow hover:shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
       <div className="relative overflow-hidden bg-cover bg-no-repeat" data-te-ripple-init data-te-ripple-color="light">
-        <img className="rounded-t w-full h-32 object-cover" src={imageUrl} alt="" />
+        <img
+          className="rounded-t w-full h-32 object-cover" 
+          src={imageUrl} 
+          alt="" 
+          />
         <a href="#!">
           <div className="absolute bottom-0 left-0 right-0 top-0 h-full w-full overflow-hidden bg-[hsla(0,0%,98%,0.15)] bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-100"></div>
         </a>
@@ -34,10 +38,11 @@ const EventCard: React.FC<ReusableCardProps> = ({ id, slug, imageUrl, title, dat
           {cutOffLongStrings(title)}
         </h5>
         <p className="mb-2 text-sm font-medium text-neutral-400 dark:text-neutral-200">
-          {formatDate(date)}, {time}
+          {formatDate(date.startDate)} to  {formatDate(date.endDate)}
+          {/* {time} */}
         </p>
         <p className="mb-2 text-sm text-neutral-600 dark:text-neutral-200">
-          {venue}, {state}
+          {venue.street}, {venue.region}, {venue.state}
         </p>
         <p 
         className="mb-2 w-10 rounded text-center text-white text-xs dark:text-neutral-200"

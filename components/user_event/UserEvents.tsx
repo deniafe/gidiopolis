@@ -23,7 +23,7 @@ const UserEvents = () => {
       <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 lg:grid-cols-4 mt-12 md:mt-12 px-[2rem]">
         {userEvents?.map((event, index) => (
           <div className="flex justify-center md:justify-start mb-4" key={index}>
-            <UserEventCard id={event.id} slug={event.data.slug}  imageUrl={event.data.eventBanner} title={event.data.eventName} date={event.data.eventDate} time={event.data.eventTime} venue={event.data.eventAddress} state={event.data.eventState} isFree={event.data.eventPrice} isApproved={event.data.isApproved} organizer={event.data.organizerName} />
+            <UserEventCard id={event.id} slug={event.data.slug}  imageUrl={event.data.eventBanner} title={event.data.eventName} date={event.data.eventDate} time={event.data.eventTime} venue={event.data.eventAddress} isFree={event.data.eventPrice} isApproved={event.data.isApproved} organizer={event.data.organizerName} />
           </div>
         ))}
       </div>

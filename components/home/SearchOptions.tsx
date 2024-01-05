@@ -1,5 +1,6 @@
+'use client'
+
 import { categories, cost, when, where } from '@/utils/constants';
-import { useEffect } from 'react';
 
 interface SearchOptionsProps {
   handleCategory: (e: string) => void;

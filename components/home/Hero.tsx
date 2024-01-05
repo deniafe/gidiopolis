@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import React from 'react'
 import { Search } from '../icons/Search'
 import SearchModal from "./SearchModal";
+import Image from 'next/image'
 
 const Hero = () => {
   useEffect(() => {
@@ -13,17 +14,19 @@ const Hero = () => {
     init();
   }, []);
   return (
-    <section className="mb-32 md:mb-0 md:min-h-screen">
+    <section className="mb-20 md:mb-24">
      <div className="flex flex-row justify-around">
       <div className="md:mt-6 hidden md:block">
-          <img
+          <Image
             alt='Davido'
+            width={120}
+            height={120}
             src='/img/femi.jpg'
             className="rounded-full w-[8.5rem] h-[20rem] object-cover bg-center bg-cover bg-lightgray-500"
             style={{
               background: 'lightgray 50% / cover no-repeat'
             }}
-          ></img>
+          />
         </div>
 
         {/* Newsletter sign-up input field */}
@@ -59,11 +62,13 @@ const Hero = () => {
         </div>
 
         <div className="md:mt-32 hidden md:block">
-          <img
+          <Image
             alt='Davido'
+            width={120}
+            height={120}
             className="rounded-full w-[8.5rem] h-[20rem] object-cover bg-center bg-cover bg-lightgray-500"
             src='/img/davido.jpg'
-          ></img>
+          />
         </div>
       </div>
 

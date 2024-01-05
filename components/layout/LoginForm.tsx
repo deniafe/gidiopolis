@@ -7,6 +7,7 @@ import { signIn } from '@/firebase/auth/signin';
 import { signInWithGooglePopup } from '@/firebase/auth/signup';
 import { createUserDocumentFromAuth } from '@/firebase/auth/create_user';
 import { successMessage } from '@/firebase/success_message';
+import Image from 'next/image'
 
 const SignupForm = () => {
   const [email, setEmail] = useState('')
@@ -73,12 +74,16 @@ const SignupForm = () => {
       className="mb-8 md:mb-8 md:min-h-screen"
     >
       
-      <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mt-8 px-[2rem]">
+      <div className="mt-[8rem] grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mt-8 px-[2rem]">
 
-        <div className="md:px-[2rem] mb-12 md:mb-0" >
-          <h2 className="text-center  text-[1.75rem] text-black font-medium mb-4 ">
-            Sign In To Gidiopolis
+        <div className="md:px-[2rem] text-center mb-12 md:mb-0 md:mt-24" >
+          <h2 className="text-center  text-[1.75rem] text-black font-medium mb-2 ">
+            Welcome To Gidiopolis
           </h2>
+          <p className="text-center text-black mb-8 ">
+            By continuing you are setting up a Gidiopolis account
+            and agree to our User agreement and Privacy Policy.
+          </p>
 
           <div className="mt-8">
 
@@ -101,14 +106,16 @@ const SignupForm = () => {
               </a>
 
             {/* Divider */}
-            <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
+
+            
+            {/* <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
               <p className="mx-4 mb-0 text-center font-light text-sm dark:text-neutral-200">
                 OR Sign In With Email
               </p>
             </div>
 
             <form>
-              {/* Email input */}
+             
               <div className="mb-2 pt-4">
                 <small>Email Address</small>
                 <input
@@ -120,7 +127,7 @@ const SignupForm = () => {
                   />
               </div>
 
-              {/* Password input */}
+             
               <div className="mb-4">
                 <small>Password</small>
                 <input
@@ -131,7 +138,7 @@ const SignupForm = () => {
                   />
               </div>
 
-              {/* Remember me checkbox */}
+             
               <div className="mb-6 flex items-center justify-between">
                 <div className="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem]">
                   <input
@@ -149,7 +156,7 @@ const SignupForm = () => {
                   </label>
                 </div>
 
-                {/* Forgot password link */}
+               
                 <a
                   data-te-toggle="modal"
                   data-te-target="#resetModal"
@@ -162,7 +169,7 @@ const SignupForm = () => {
                 </a>
               </div>
 
-              {/* Submit button */}
+             
               <div
                 onClick={signInWithEmail}
                 className="inline-block text-center cursor-pointer w-full rounded-full bg-my-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#31859C] transition duration-150 ease-in-out hover:bg-cyan-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-cyan-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-cyan-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
@@ -179,7 +186,7 @@ const SignupForm = () => {
                   )
                 }
               </div>
-              {/* Don't have an account? Signup link */}
+              
               <div className='mt-2 text-center' >{"Don't have an account?"}
               <span className='ml-2' >
               <a
@@ -194,19 +201,21 @@ const SignupForm = () => {
               </a>
               </span> 
               </div>
-            </form>
+            </form> */}
           </div>
           
         </div>
 
-        <div className="flex relative justify-center mt-12">
+        <div className="hidden md:flex relative justify-center mt-12">
           <div className="hidden md:block absolute top-[2rem] left-[3rem] h-8 w-8 rounded-lg bg-cyan-400"></div>
           <div className="hidden md:block absolute top-[4rem] left-[5rem] h-12 w-12 rounded-xl bg-my-primary"></div>
-          <img
+          <Image
             alt='Davido'
+            width={120}
+            height={120}
             className="rounded-3xl md:rounded-3xl w-[18rem] h-[20rem] object-cover bg-center bg-cover bg-lightgray-500"
             src='/img/davido.jpg'
-          ></img>
+          />
         </div>
         
       </div>

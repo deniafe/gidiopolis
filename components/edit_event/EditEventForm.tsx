@@ -1,5 +1,6 @@
-"use client";
-import React, { useEffect, useState } from 'react'
+'use client'
+
+import React, { useEffect, useMemo, useState } from 'react'
 import { Loading } from '../global/Loading';import { UploadInput } from '../global/UploadInput';
 import { catexts, states } from '@/utils/constants';
 import { SelectInput } from '../global/SelectInput';
@@ -16,6 +17,25 @@ import { useRouter } from 'next/navigation';
 import { addImage, deleteImage } from '@/firebase/firestore/add_image';
 import { FirebaseEvent } from '@/firebase/firestore/get_data';
 import { Timestamp } from 'firebase/firestore';
+import { LGA } from '@/types';
+import SocialLinkForm from '../event/SocialLinkForm';
+import DescriptionForm from '../event/DescriptionForm';
+import AddressForm from '../event/AddressForm';
+import DateForm from '../event/DateForm';
+import EventBasicsForm from '../event/EventBasicsForm';
+import OrganizerDetailsForm from '../event/OrganizerDetailsForm';
+import PrimaryButton from '../global/PrimaryButton';
+import { addDays } from 'date-fns';
+import Steps from '../event/Steps';
+
+enum STEPS {
+  ORGANIZER = 0,
+  BASICS = 1,
+  DESCRIPTION = 2,
+  DATE = 3,
+  ADDRESS = 4,
+  LINKS = 5,
+}
 
 interface EditEventForm {
   id: string;
@@ -27,22 +47,26 @@ interface EditEventForm {
   number?: string;
   website?: string
   aboutOrganizer?: string
-  date?: Timestamp;
+  // date?: Timestamp;
+  date?: {startDate: Timestamp, endDate: Timestamp, key: string};
   time?: string;
-  venue?: string;
-  state?: string;
+  venue?: {state: string, region: string, street: string, zoom: number, center: [number, number]};
   category?: string;
   priceAmount?: string;
   price?: string;
   isApproved?: string;
   description?: string;
+  eventTwitter?: string;
+  eventLinkedin?: string;
+  eventInstagram?: string;
 }
 
 
-const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, title, email, number, website, aboutOrganizer, date, time, category, priceAmount, price, venue, state, isApproved, description }) => {
+const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, title, email, number, website, aboutOrganizer, date, time, category, priceAmount, price, venue, isApproved, description, eventTwitter, eventLinkedin, eventInstagram }) => {
   const { user } = useAuthContext()
   const router = useRouter()
   
+  const [step, setStep] = useState(STEPS.ORGANIZER);
   const [loading, setLoading] = useState(false);
   const [organizerName, setOrganizerName] = useState(name || '');
   const [organizerEmail, setOrganizerEmail] = useState(email || '');
@@ -54,21 +78,30 @@ const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, titl
   const [eventPrice, setEventPrice] = useState(price || '');
   const [eventPriceAmount, setEventPriceAmount] = useState(priceAmount || '0');
   const [eventBanner, setEventBanner] = useState(imageUrl || '');
-  const [eventDate, setEventDate] = useState((date && formatDateFromTimestamp(date)) || '');
+  const [eventDate, setEventDate] = useState<any[]>(
+    [
+      {
+        startDate: new Date(),
+        endDate: addDays(new Date(), 7),
+        key: 'selection'
+      }
+    ]
+  );
   const [eventTime, setEventTime] = useState(time || '');
-  const [eventState, setEventState] = useState(state || '');
-  const [eventAddress, setEventAddress] = useState(venue || '');
+  const [eventState, setEventState] = useState('');
+  const [eventRegion, setEventRegion] = useState('');
+  const [regions, setRegions] = useState<LGA[]>([])
+  const [regionNames, setRegionNames] = useState<string[]>(['']) 
+  const [center, setCenter] = useState<number[]>([6.5244, 3.3792])
+  const [zoom, setZoom] = useState<number>(8)
+  const [eventAddress, setEventAddress] = useState('');
   const [eventDescription, setEventDescription] = useState(description || '');
-  const [twitter, setTwitter] = useState('');
-  const [instagram, setInstagram] = useState('');
-  const [linkedIn, setLinkedIn] = useState('');
+  const [twitter, setTwitter] = useState(eventTwitter || '');
+  const [instagram, setInstagram] = useState(eventInstagram || '');
+  const [linkedIn, setLinkedIn] = useState(eventLinkedin || '');
 
 
-
-  async function handleEventEdit(event: React.MouseEvent<HTMLDivElement>) {
-    event.preventDefault();
-    if(loading) return
-
+  function validateForm() {
     if(organizerName.length < 3) {
       return errorMessage("Organizer's name must not be empty and should be more than 3 characters");
     }
@@ -137,7 +170,36 @@ const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, titl
       return errorMessage("Invalid linkedIn url format - Event linkedin url invalid.");
     }
 
+    return true
+  }
+
+
+  async function handleEventEdit(event: React.MouseEvent<HTMLDivElement>) {
+    event.preventDefault();
+    if(loading) return
+
+    if (step !== STEPS.LINKS) {
+      return onNext();
+    }
+
+    // If form has not been validated successfully, dont return anything
+    if (!validateForm()) return 
+    
     setLoading(true)
+
+    const eDate = {
+      startDate: Timestamp.fromDate(eventDate[0].startDate),
+      endDate: Timestamp.fromDate(eventDate[0].endDate),
+      key: eventDate[0].key
+    }
+    const eaddress = {
+      state: eventState,
+      region: eventRegion,
+      street: eventAddress,
+      center,
+      zoom
+    }
+    const eslug = createSlug(eventName)
 
     const data = {
       organizerName,
@@ -148,11 +210,11 @@ const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, titl
       eventName,
       eventCategory,
       eventPrice,
-      eventDate: convertToTimestamp(eventDate),
+      eventBanner,
+      eventDate: eDate,
       eventPriceAmount,
       eventTime,
-      eventState,
-      eventAddress,
+      eventAddress: eaddress,
       eventDescription,
       slug: createSlug(eventName),
       twitter,
@@ -160,13 +222,10 @@ const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, titl
       linkedIn
     }
 
-    // setLoading(false)
-
     console.log('sending details for updating', id, data)
 
     const { result, error } = await editData('events', id, data)
 
-    // console.log('This is the result of editing', result, error)
 
     // If there is an error editing the event, return an error message
     if (error) {
@@ -174,44 +233,38 @@ const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, titl
       return errorMessage(error)
     }
 
-    console.log('data to be sent to firebase', data)
-    console.log('Is event image a firebase image?', isFirebaseStorageUrl(eventBanner))
-
-    // If the data has been successfully updated and the event banner is not a firebaseStorageUrl
-    if (result === 'Data successfully updated' && !isFirebaseStorageUrl(eventBanner)) {
-
-      console.log('New image detected and we will be uplaoding it')
-
-      // First delete the old image
-      const { imageDeleteResult, imageDeleteError } = await deleteImage(id)
-
-      // If there is an error with deleting an image, return an error message
-      if (imageDeleteError) {
-        setLoading(false)
-        return errorMessage(error)
-      }
-
-      // If we get here, it means the image has been deleted successfully, so upload the new image
-      const { imageResult, imageError } = await addImage({docRefId: id, eventBanner})
-
-      // If there was an error uplaoding the new image, return an error message
-      if (imageError) {
-        setLoading(false)
-        return errorMessage(error)
-      }
-
-      // If we get here, it means the image has been uploaded successfully
-      successMessage("Event edited successfully 🎉")
-      setLoading(false)
-      return router.push("/");
-      
-    } else {
-      successMessage("Event edited successfully 🎉")
-      setLoading(false)
-      return router.push("/");
-    }
+    successMessage("Event edited successfully 🎉")
+    setLoading(false)
+    return router.push("/");
 
   }
+
+  const onBack = () => {
+    setStep((value) => value - 1);
+  }
+
+  const onNext = () => {
+    setStep((value) => value + 1);
+  }
+
+  const secondaryAction = step === STEPS.ORGANIZER ? undefined : onBack
+
+  const actionLabel = useMemo(() => {
+    if (step === STEPS.LINKS) {
+      return 'Update Event'
+    }
+
+    return 'Next'
+  }, [step]);
+
+  const secondaryActionLabel = useMemo(() => {
+    if (step === STEPS.ORGANIZER) {
+      return undefined
+    }
+
+    return 'Back'
+  }, [step]);
+
 
   useEffect(() => {
     // Check if the URL does not end with "/create-event"
@@ -226,241 +279,157 @@ const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, titl
   }, []);
 
   useEffect(() => {
+
+    const eDate = {
+      startDate: date && date.startDate.toDate(),
+      endDate:  date && date.endDate.toDate(),
+      key: date?.key
+    }
+
+    setEventDate([eDate])
+    setEventState(venue?.state || '')
+    setEventRegion(venue?.region || '')
+    setEventAddress(venue?.street || '')
+    setCenter(venue?.center || [0, 0])
+    setZoom(venue?.zoom || 8)
+  }, [date,venue ])
+
+  useEffect(() => {
     if (user == null) router.push("/")
   }, [user])
 
+  let bodyContent = (
+    <OrganizerDetailsForm
+      setOrganizerName={setOrganizerName}
+      setOrganizerEmail={setOrganizerEmail}
+      setOrganizerNumber={setOrganizerNumber}
+      setOrganizerWebsite={setOrganizerWebsite}
+      setOrganizerDescription={setOrganizerDescription}
+      organizerName={organizerName}
+      organizerEmail={organizerEmail}
+      organizerNumber={organizerNumber}
+      organizerWebsite={organizerWebsite}
+      organizerDescription={organizerDescription}
+    />
+  )
+
+  if (step === STEPS.BASICS) {
+    bodyContent = (
+      <EventBasicsForm
+      setEventName={setEventName}
+      setEventCategory={setEventCategory}
+      setEventPrice={setEventPrice}
+      setEventPriceAmount={setEventPriceAmount}
+      setEventBanner={setEventBanner}
+      eventName={eventName}
+      eventCategory={eventCategory}
+      eventPrice={eventPrice}
+      eventPriceAmount={eventPriceAmount}
+      eventBanner={eventBanner}
+    />
+    );
+  }
+
+  if (step === STEPS.DATE) {
+    bodyContent = (
+      <DateForm 
+        setEventDate={setEventDate} 
+        eventDate={eventDate} 
+        setEventTime={setEventTime} 
+        eventTime={eventTime}
+        />
+    );
+  }
+
+  if (step === STEPS.ADDRESS) {
+    bodyContent = (
+      <AddressForm 
+        setEventState={setEventState} 
+        setEventRegion={setEventRegion} 
+        setEventAddress={setEventAddress} 
+        setRegions={setRegions} 
+        setRegionNames={setRegionNames}
+        setCenter={setCenter}
+        setZoom={setZoom}
+        regions={regions}
+        regionNames={regionNames}
+        eventState={eventState}
+        eventRegion={eventRegion}
+        eventAddress={eventAddress}
+        center={center}
+        zoom={zoom}
+      />
+    );
+  }
+
+  if (step === STEPS.DESCRIPTION) {
+    bodyContent = (
+      <DescriptionForm setEventDescription={setEventDescription} eventDescription={eventDescription} />
+    );
+  }
+
+  if (step === STEPS.LINKS) {
+    bodyContent = (
+      <SocialLinkForm 
+        setTwitter={setTwitter} 
+        setInstagram={setInstagram} 
+        setLinkedIn={setLinkedIn}
+        twitter={twitter}
+        instagram={instagram}
+        linkedIn={linkedIn}   
+        />
+    );
+  }
 
   return (
     <section
-      className="mb-8 pt-1  md:mb-8 md:min-h-screen"
+      className="pt-1 mb-12 md:mb-16"
     >
       
       <div className="mt-8 md:mt-2 px-[2rem]">
 
         <div className="md:px-[2rem]  md:mb-0" >
-          <h2 className="text-center  text-[1.75rem] text-black font-medium mb-4 md:mb-12">
+          <h1 id="share" className="text-center text-[1.75rem] text-black font-medium mb-4 md:mb-12">
             Edit {eventName} Event
-          </h2>
+          </h1>
 
           <div className="mt-4 md:px-6">
+
+            <Steps currentStep={step + 1}/>
 
             <form 
              data-te-validation-init
              data-te-active-validation="true"
-            className="md:mx-[4rem] md:mb-8"
+             className="md:mx-[4rem] md:mb-8"
             >
 
-              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mb-2">
-
-                {/* Organizer Name input */}
-                <div className="mb-1">
-                  <Input 
-                    label="Organizer name" 
-                    len={25} 
-                    type="text" 
-                    value={organizerName}
-                    rules={(val: string) => val.length < 3 }
-                    errorMessage='Organizer Name cannot be less than 2 chacracters'
-                    handleChange={(val) => setOrganizerName(val)} 
-                  />
-                  </div>
-
-                {/* Organizer Email input */}
-                <div className="mb-1">
-                  <Input 
-                    label="Organizer Email" 
-                    type="email" 
-                    value={organizerEmail}
-                    rules={(val: string) => !validateEmail(val) }
-                    errorMessage='Organizer Email must be valid'
-                    handleChange={(val) => setOrganizerEmail(val)} 
-                  />
-                </div>
-
-                {/* Organizer Number input */}
-                <div className="mb-1">
-                  <Input 
-                    label="Organizer Phone Number" 
-                    len={13} type="text" 
-                    value={organizerNumber}
-                    rules={(val: string) => !validatePhoneNumber(val) }
-                    errorMessage='Organizer Phone Number must be valid'
-                    handleChange={(val) => setOrganizerNumber(val)} 
-                  />
-                </div>
-
-                {/* Organizer Website input */}
-                <div className="mb-1">
-                  <Input 
-                    label="Organizer Website" 
-                    type="text" 
-                    value={organizerWebsite}
-                    rules={(val: string) => !validateUrl(val) }
-                    errorMessage='Organizer Website url must be valid'
-                    handleChange={(val) => setOrganizerWebsite(val)} 
-                  />
-                </div>
-
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
-                  {/* About Organizer input */}
-                <div className="mb-1">
-                  <TextArea 
-                    label="About Organizer" 
-                    type="text" 
-                    rules={(val: string) => val.length < 50 }
-                    errorMessage='About organizer cannot be less than 50 chacracters'
-                    handleChange={(val) => setOrganizerDescription(val)} 
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
-                {/* Event Name input */}
-                <div className="mb-1">
-                  <Input 
-                    label="Event Name" 
-                    len={25} type="text" 
-                    value={eventName}
-                    rules={(val: string) => val.length < 3 }
-                    errorMessage='Event Name cannot be less than 2 chacracters'
-                    handleChange={(val) => setEventName(val)} 
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mb-2">
-                {/* Event Category input */}
-                <div className="mb-1">
-                  <SelectInput value={eventCategory} label='Event Category' items={catexts} handleChange={(value) => setEventCategory(value)} />
-                </div>
-
-                {/* Event Price input */}
-                <div className="mb-1">
-                  <Input 
-                    label="Event Price" 
-                    len={10} 
-                    type="text" 
-                    value={eventPriceAmount}
-                    rules={(val: string) => !validatePrice(val) }
-                    errorMessage="Price should either be 'free' or a number"
-                    handleChange={(val) => {
-                      if(makePrice(val) === 'free') {
-                        setEventPrice('free')
-                        setEventPriceAmount('0')
-                      } else if(makePrice(val) === 'paid') {
-                        setEventPrice('paid')
-                        setEventPriceAmount(val)
-                      }
-                      
-                    }} 
-                    />
-                </div>
-
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
-                {/* Event Upload Banner */}
-                <div className="mb-1">
-                  <UploadInput value={eventBanner} label='Event Banner' handleChange={(e) => setEventBanner(e)} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 gap-y-6 md:grid-cols-2 md:mb-2">
-
-                {/* Event Date input */}
-                <div className="mb-1">
-                  <DateInput value={eventDate} label={'Event Date'} handleChange={(value) => setEventDate(value)} /> 
-                </div>
-
-                {/* Time input */}
-                <div className="mb-1">
-                  <TimeInput value={eventTime} label={'Event Time'} handleChange={(value) => setEventTime(value)} />
-                </div>
-
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 md:mb-2">
-                {/* States Select input */}
-                <div className="mb-1">
-                  <SelectInput value={eventState} label='Event State' items={states} handleChange={(value) => setEventState(value)} />
-                </div>
-
-               {/* Event Address input */}
-               <div className="mb-1">
-                  <Input 
-                    label="Event Address" 
-                    len={25} type="text" 
-                    value={eventAddress}
-                    rules={(val: string) => val.length < 6 }
-                    errorMessage='Event Address cannot be less than 6 chacracters'
-                    handleChange={(val) => setEventAddress(val)} 
-                    />
-                </div>
-
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-1 md:mb-2">
-                  {/* Event Description input */}
-                <div className="mb-1">
-                  <TextArea 
-                    label="About Event" 
-                    type="text" 
-                    value={eventDescription}
-                    rules={(val: string) => val.length < 50 }
-                    errorMessage='Event Description cannot be less than 50 chacracters'
-                    handleChange={(val) => setEventDescription(val)} 
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-3 md:mb-2">
-
-                {/* Twitter input */}
-                <div className="mb-1">
-                 <Input 
-                  label="Twitter" 
-                  type="text"
-                  value={twitter}
-                  rules={(val: string) => !validateUrl(val) }
-                  errorMessage='Url must be valid'
-                  handleChange={(val) => setTwitter(val)} 
-                  />
-                </div>
-
-                {/* Instagram input */}
-                <div className="mb-1">
-                  <Input 
-                    label="Instagram" 
-                    type="text"
-                    value={instagram}
-                    rules={(val: string) => !validateUrl(val) }
-                    errorMessage='Url must be valid'
-                    handleChange={(val) => setInstagram(val)} 
-                  />
-                </div>
-
-                {/* LinkedIn input */}
-                <div className="mb-1">
-                  <Input 
-                    label="LinkedIn" 
-                    type="text"
-                    value={linkedIn}
-                    rules={(val: string) => !validateUrl(val) }
-                    errorMessage='Url must be valid'
-                    handleChange={(val) => setLinkedIn(val)} 
-                  />
-                </div>
-
-              </div>
+                {bodyContent}
               
               {/* Submit button */}
-              <div
+              <div className="flex justify-end space-x-4 mt-[4rem]">
+                {secondaryAction && secondaryActionLabel && (
+                    <PrimaryButton onClick={secondaryAction}>
+                      <span className="px-4">{secondaryActionLabel}</span>
+                    </PrimaryButton> 
+                )}
+
+                <PrimaryButton onClick={handleEventEdit}>
+                    {
+                      loading ?
+                      (<Loading />) :
+                      (
+                        <span className="px-4">{actionLabel}</span>
+                      )
+                    }
+                </PrimaryButton> 
+              </div>
+              
+
+              {/* <div
                 className="my-8 inline-block text-center cursor-pointer w-full rounded-full bg-my-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#31859C] transition duration-150 ease-in-out hover:bg-cyan-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-cyan-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-cyan-800 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                 data-te-ripple-init
                 data-te-ripple-color="light"
-                onClick={handleEventEdit}
+                onClick={handleFormSubmit}
               >
 
                 {
@@ -468,11 +437,11 @@ const EditEventForm: React.FC<EditEventForm> = ({ id, slug, imageUrl, name, titl
                   (<Loading />) :
                   (
                     <span>
-                      Update Event
+                      Create New Event
                     </span>
                   )
                 }
-              </div>
+              </div> */}
              
             </form>
           </div>

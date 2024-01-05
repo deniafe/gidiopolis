@@ -1,3 +1,5 @@
+'use client'
+
 import { deleteEvent } from "@/firebase/firestore/get_data"
 import { useEventContext } from '@/context/UserEventContext'
 import { errorMessage } from "@/firebase/error_message"

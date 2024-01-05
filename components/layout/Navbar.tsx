@@ -7,11 +7,13 @@ import { useAuthContext } from "@/context/AuthContext";
 import { UserMenu } from '../global/UserMenu';
 import { useEventContext } from '@/context/EventContext'
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
+import { signOutUser } from "@/firebase/auth/signin";
 
 
 const Navbar = () => {
   const { user } = useAuthContext()
-  const { getCategory } = useEventContext()
+  const router = useRouter()
 
   const handleButtonClick = (event: React.MouseEvent<HTMLDivElement>) => {
     console.log("Button clicked from parent component!");
@@ -79,7 +81,6 @@ const Navbar = () => {
               className="list-style-none mr-auto flex flex-col pl-0 lg:mt-1 lg:flex-row"
               data-te-navbar-nav-ref
             >
-              {/* Home link */}
               <li
                 className="my-4 pl-2 lg:my-0 lg:pl-2 lg:pr-1"
                 data-te-nav-item-ref
@@ -90,64 +91,12 @@ const Navbar = () => {
                   href="#"
                   data-te-nav-link-ref
                 >
-                  {/* Dashboard */}
                 </a>
               </li>
             </ul>
 
             <div className="md:flex md:flex-row items-center">
               <ul className="list-none text-sm font-medium mr-auto pl-6 flex flex-col md:mr-6 md:pl-0 lg:mt-1 lg:flex-row" data-te-navbar-nav-ref>
-                {/* Categories Drop Down link */}
-                {/* <li className="my-4 pl-2 lg:my-0 lg:pl-2 lg:pr-1" data-te-nav-item-ref>
-                  <div className="relative text-sm font-medium items-center" data-te-dropdown-ref>
-                    <a
-                      className="flex items-center text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                      href="#"
-                      type="button"
-                      id="dropdownMenuButton2"
-                      data-te-dropdown-toggle-ref
-                      aria-expanded="false"
-                    >
-                      Event Categories
-                      <span className="ml-2 w-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="h-5 w-5"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </a>
-                    <ul
-                      className="absolute z-[1000] float-left m-0 mt-4 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-neutral-700 [&[data-te-dropdown-show]]:block"
-                      aria-labelledby="dropdownMenuButton2"
-                      data-te-dropdown-menu-ref
-                    >
-                      {categories.map((category, index) => (
-                        <li 
-                        onClick={() => {
-                          getCategory(category.title)
-                        }}
-                        key={index}>
-                          <a
-                            className="block w-full whitespace-nowrap bg-transparent px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-neutral-100 active:text-neutral-800 active:no-underline disabled:pointer-events-none disabled:bg-transparent disabled:text-neutral-400 dark:text-neutral-200 dark:hover:bg-neutral-600"
-                            href="#"
-                            data-te-dropdown-item-ref
-                          >
-                            {category.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </li> */}
-                 {/* About link */}
                  <li className="mb-4 pl-2 lg:mb-0 lg:pl-2 lg:pr-1" data-te-nav-item-ref>
                   <a
                     className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
@@ -157,17 +106,6 @@ const Navbar = () => {
                     About
                   </a>
                 </li>
-                {/* Contact link */}
-                {/* <li className="mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1" data-te-nav-item-ref>
-                  <a
-                    className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                    href="#"
-                    data-te-nav-link-ref
-                  >
-                    Contact
-                  </a>
-                </li> */}
-                {/* Blog link */}
                 <li className="mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1" data-te-nav-item-ref>
                   <a
                     className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
@@ -177,42 +115,120 @@ const Navbar = () => {
                     Blog
                   </a>
                 </li>
+
+                {user ? 
+
+                (<>
+                    <li 
+                      onClick={() => router.push('/create-event')}
+                      className="cursor-pointer lg:hidden mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1" 
+                      data-te-nav-item-ref>
+                      <p
+                        className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"  
+                        data-te-nav-link-ref
+                        data-te-collapse-init
+                        data-te-target="#navbarSupportedContent4"
+                        aria-controls="navbarSupportedContent4"
+                      >
+                        New Event
+                      </p>
+                    </li>
+                    <li 
+                      onClick={() => router.push('/user/events')}
+                      className="cursor-pointer lg:hidden mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1" data-te-nav-item-ref>
+                      <p
+                        className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
+                        data-te-nav-link-ref
+                        data-te-collapse-init
+                        data-te-target="#navbarSupportedContent4"
+                        aria-controls="navbarSupportedContent4"
+                      >
+                        My Events
+                      </p>
+                    </li>
+                    <li 
+                      data-te-toggle="modal"
+                      data-te-target="#profileModal" 
+                      className="lg:hidden cursor-pointer mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1" data-te-nav-item-ref>
+                      <div
+                        className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
+                        data-te-nav-link-ref
+                        data-te-collapse-init
+                        data-te-target="#navbarSupportedContent4"
+                        aria-controls="navbarSupportedContent4"
+                      >
+                        Account Settings
+                      </div>
+                    </li>
+                    <li className="lg:hidden md:mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1 cursor-pointer" data-te-nav-item-ref>
+                      <div
+                        className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
+                        data-te-nav-link-ref
+                        data-te-collapse-init
+                        data-te-target="#navbarSupportedContent4"
+                        aria-controls="navbarSupportedContent4"
+                        onClick={signOutUser}
+                      >
+                        Signout
+                      </div>
+                    </li>
+                </>
+                ) : (
+                  <li 
+                    data-te-toggle="modal"
+                    data-te-target="#signinModal"
+                    className="cursor-pointer md:hidden mb-4 pl-2 lg:mb-0 lg:pl-0 lg:pr-1" data-te-nav-item-ref>
+                    <div
+                      className="p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
+                      data-te-nav-link-ref
+                      data-te-collapse-init
+                      data-te-target="#navbarSupportedContent4"
+                      aria-controls="navbarSupportedContent4"
+                    >
+                      Login
+                    </div>
+                  </li>
+                )
+                }
+
+                
+
               </ul>
 
               {
                 user ?
                 (
-                  <div className="flex">
+                  <div className="hidden lg:flex">
                     <UserMenu />
-                    <a
+                    <Link
                       className='pt-1' 
                       href={'/create-event'}                    
                       >
                       <TextButton onClick={handleButtonClick}>+ New Event</TextButton>
-                    </a>
+                    </Link>
                   </div>
                   
                 ) :
 
                 (
-                  <div className="flex">
+                  <div className="hidden md:flex">
                     <div
                       data-te-toggle="modal"
                       data-te-target="#signinModal"
                       data-te-ripple-init
                       data-te-ripple-color="light"
                     >
-                      <TextButton onClick={handleButtonClick}>Login</TextButton>
+                      <PrimaryButton onClick={handleButtonClick}>Sign In</PrimaryButton>
                     </div>
     
-                    <div
+                    {/* <div
                       data-te-toggle="modal"
                       data-te-target="#signupModal"
                       data-te-ripple-init
                       data-te-ripple-color="light"
                     >
                       <PrimaryButton onClick={handleButtonClick}>Sign up</PrimaryButton>
-                    </div>
+                    </div> */}
                   </div>
                 )
               }

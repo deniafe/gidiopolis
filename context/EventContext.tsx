@@ -1,4 +1,5 @@
-// "use client";
+'use client'
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { FirebaseEvent, getEvents, getCategoryEvents  } from '@/firebase/firestore/get_data';
 import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from 'firebase/firestore';

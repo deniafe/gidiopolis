@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import SearchInput from './SearchInput';
 import SearchOptions from './SearchOptions';

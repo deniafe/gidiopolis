@@ -1,7 +1,11 @@
-"use client";
-import React from 'react'
+'use client'
+
 import SimilarEvent from './SimilarEvent';
 import { formatDate } from '@/utils/func';
+import Image from 'next/image';
+import Map from './Map';
+import { DateRange } from 'react-date-range';
+import { addDays } from 'date-fns';
 
 interface EventProps {
   event: any;
@@ -15,7 +19,7 @@ const Hero = ({event}: EventProps) => {
         <img
           alt='Event Banner'
           src={event?.eventBanner}
-          className="rounded-full w-full h-[20rem] object-cover bg-center bg-cover bg-lightgray-500"
+          className="rounded-[2rem] lg:rounded-full w-full h-[20rem] object-cover bg-center bg-cover bg-lightgray-500"
           style={{
             background: 'lightgray 50% / cover no-repeat'
           }}
@@ -60,7 +64,7 @@ const Hero = ({event}: EventProps) => {
               </defs>
             </svg>
 
-            <p className='ml-2' >{event?.eventDate && formatDate(event.eventDate)}</p>
+            <p className='ml-2' >{event?.eventDate && formatDate(event.eventDate.startDate)} to {event?.eventDate && formatDate(event.eventDate.endDate)}</p>
           </div>
 
           <div className='flex font-medium text-sm'>
@@ -78,19 +82,26 @@ const Hero = ({event}: EventProps) => {
           </div>
 
         </div>
-        {/* Products section */}
-        <div>
-          <h6 className="mb-2 md:mb-8 font-semibold uppercase">
-            Where
-          </h6>
-          <div className='flex font-medium text-sm'>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.9999 2.4C10.0001 2.40236 8.08295 3.19781 6.6689 4.61186C5.25485 6.02591 4.4594 7.94309 4.45704 9.94286C4.45464 11.5771 4.98845 13.1669 5.97658 14.4686C5.97658 14.4686 6.1823 14.7394 6.2159 14.7785L11.9999 21.6L17.7866 14.7751C17.8168 14.7387 18.0232 14.4686 18.0232 14.4686L18.0239 14.4665C19.0115 13.1655 19.5451 11.5763 19.5428 9.94286C19.5404 7.94309 18.7449 6.02591 17.3309 4.61186C15.9168 3.19781 13.9997 2.40236 11.9999 2.4ZM11.9999 12.6857C11.4574 12.6857 10.9271 12.5248 10.476 12.2235C10.025 11.9221 9.67343 11.4937 9.46583 10.9925C9.25823 10.4913 9.20391 9.93982 9.30974 9.40775C9.41558 8.87569 9.67681 8.38696 10.0604 8.00337C10.444 7.61977 10.9327 7.35854 11.4648 7.2527C11.9969 7.14687 12.5484 7.20119 13.0495 7.40879C13.5507 7.61639 13.9791 7.96795 14.2805 8.41901C14.5819 8.87007 14.7428 9.40037 14.7428 9.94286C14.7418 10.67 14.4526 11.3672 13.9384 11.8813C13.4242 12.3955 12.7271 12.6848 11.9999 12.6857Z" fill="black"/>
-          </svg>
-          <p className='ml-2' >{event?.eventAddress}, {event?.eventState}</p>
-          </div>
 
+      </div>
+
+      {/* Address Section */}
+      <div className='mb-12 px-[2rem]'>
+        <h6 className="mb-2 md:mb-8 font-semibold uppercase">
+          Where
+        </h6>
+        <div className='flex font-medium text-sm'>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.9999 2.4C10.0001 2.40236 8.08295 3.19781 6.6689 4.61186C5.25485 6.02591 4.4594 7.94309 4.45704 9.94286C4.45464 11.5771 4.98845 13.1669 5.97658 14.4686C5.97658 14.4686 6.1823 14.7394 6.2159 14.7785L11.9999 21.6L17.7866 14.7751C17.8168 14.7387 18.0232 14.4686 18.0232 14.4686L18.0239 14.4665C19.0115 13.1655 19.5451 11.5763 19.5428 9.94286C19.5404 7.94309 18.7449 6.02591 17.3309 4.61186C15.9168 3.19781 13.9997 2.40236 11.9999 2.4ZM11.9999 12.6857C11.4574 12.6857 10.9271 12.5248 10.476 12.2235C10.025 11.9221 9.67343 11.4937 9.46583 10.9925C9.25823 10.4913 9.20391 9.93982 9.30974 9.40775C9.41558 8.87569 9.67681 8.38696 10.0604 8.00337C10.444 7.61977 10.9327 7.35854 11.4648 7.2527C11.9969 7.14687 12.5484 7.20119 13.0495 7.40879C13.5507 7.61639 13.9791 7.96795 14.2805 8.41901C14.5819 8.87007 14.7428 9.40037 14.7428 9.94286C14.7418 10.67 14.4526 11.3672 13.9384 11.8813C13.4242 12.3955 12.7271 12.6848 11.9999 12.6857Z" fill="black"/>
+        </svg>
+        <p className='ml-2' >
+          {event?.eventAddress.street}, {event?.eventAddress.region}, {event?.eventAddress.state}
+          </p>
         </div>
+        <div className='lg:w-2/3 mt-[1rem]'>
+          <Map center={event?.eventAddress.center} zoom={event?.eventAddress.zoom} />
+        </div>
+        
       </div>
 
       <div className='mb-12 px-[2rem]'>
@@ -103,22 +114,22 @@ const Hero = ({event}: EventProps) => {
         >
           {event?.eventPrice === 'free' ? "Free" : "Paid"}
         </p>
-        <p className="md:w-8/12" >
+        <div className="w-full md:w-8/12 " >
           {event?.eventDescription}
-        </p>
+        </div>
       </div>
 
       <div className='mb-12 px-[2rem]'>
         <h3 className="mb-2 font-semibold uppercase">
           About Organizer
         </h3>
-        <p className="mb-6 md:w-8/12" >
+        <div className="mb-6 md:w-8/12" >
           {event?.eventDescription}
-        </p>
+        </div>
         <h6 className="mb-2 text-xs font-semibold uppercase">
           Contact Organizer
         </h6>
-        <p className="mb-2 md:w-8/12" >
+        <p className="mb-2" >
           {event?.organizerNumber}, {event?.organizerEmail}
         </p>
         <div className='mb-12 flex md:w-1/4' >

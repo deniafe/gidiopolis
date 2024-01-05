@@ -1,3 +1,5 @@
+'use client'
+
 import React, { ChangeEvent, useEffect } from 'react';
 
 interface TimeInputProps {

@@ -68,10 +68,12 @@ useEffect(() => {
             category={event?.eventCategory}
             priceAmount={event?.eventPriceAmount}
             venue={event?.eventAddress} 
-            state={event?.eventState} 
             price={event?.eventPrice} 
             isApproved={event?.isApproved} 
             description={event?.eventDescription} 
+            eventTwitter={event?.twitter}
+            eventLinkedin={event?.linkedIn}
+            eventInstagram={event?.instagram}
           />
         </>
         )

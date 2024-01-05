@@ -15,12 +15,14 @@ export default function UserEvent() {
   const router = useRouter()
 
   useEffect(() => {
-    if (user == null) router.push("/")
+    console.log('Checking user')
+    if (user == null) return router.push("/")
+    getEvents()
   }, [user])
 
   useEffect(() => {
     console.log('Calling user events')
-    getEvents()
+    
   }, []);
   
   return (
@@ -42,12 +44,12 @@ export default function UserEvent() {
           {userEvents && userEvents.length === 0 ? (
             <div>
               <div
-                className="text-my-primary md:mt-12 md:mb-8"
+                className="text-my-primary mt-[6rem] md:mt-12 md:mb-8"
                 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               >
                 <Empty />
               </div>
-              <p className="text-center mb-32" >No data available</p>
+              <p className="text-center mt-4 mb-32" >No data available</p>
             </div>
           ) : 
           (

@@ -1,5 +1,4 @@
-"use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Arts } from '../icons/Arts';
 import { NightLife } from '../icons/NightLife';
 import { BusinessEconomy } from '../icons/BusinessEconomy';
@@ -9,7 +8,7 @@ import { Tech } from '../icons/Tech';
 import { Others } from '../icons/Others';
 import { Kids } from '../icons/Kids';
 import { Concert } from '../icons/Concert';
-import { useEventContext } from '@/context/EventContext'
+import { useEventContext } from '@/context/EventContext';
 
 interface Category {
   label: string;
@@ -28,15 +27,10 @@ const categories: Category[] = [
   { label: 'IT/Tech', icon: <Tech /> },
 ];
 
-// interface CategoriesProps {
-//   getCategory: (category: string) => void;
-// }
-
 const Categories = () => {
-  // const [selectedCategory, setSelectedCategory] = useState<string>('All'); 
-  const { selectedCategory, setSelectedCategory, getCategory } = useEventContext()
+  const { selectedCategory, setSelectedCategory } = useEventContext();
 
-  useEffect(() => { 
+  useEffect(() => {
     const init = async () => {
       const { Animate, initTE } = await import('tw-elements');
       initTE({ Animate });
@@ -45,23 +39,20 @@ const Categories = () => {
   }, []);
 
   return (
-    <section className="mb-24 md:mb-24">
-      {/* <h2 className="flex justify-center md:justify-start text-[1.75rem] text-black font-medium px-[2rem]">
-        Categories
-      </h2> */}
-      <div className="flex flex-col items-center md:flex-row md:justify-around text-black px-[2rem] text-xs mt-8">
+    <section className="mb-24 md:mb-20 overflow-x-scroll">
+      <div className="flex flex-row flex-wrap lg:flex-nowrap justify-around text-black px-[2rem] text-xs mt-8">
         {categories.map((category) => (
           <div
             key={category.label}
             onClick={() => {
               setSelectedCategory(category.label);
             }}
-            className={`flex justify-between py-2 cursor-pointer rounded-full px-2 ${
+            className={`flex flex-col min-w-[150px] lg:min-w-0 lg:flex-row lg:w-auto rounded-lg py-2 cursor-pointer lg:rounded-full px-2 ${
               selectedCategory === category.label ? 'bg-my-primary text-white' : ''
             }`}
           >
-            {category.icon}
-            <span className="ml-2 mt-1">{category.label}</span>
+            <p className="flex justify-center">{category.icon}</p>
+            <p className="ml-2 mt-1 text-center">{category.label}</p>
           </div>
         ))}
       </div>

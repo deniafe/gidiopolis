@@ -1,3 +1,5 @@
+'use client'
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { FirebaseEvent, searchEvents } from '@/firebase/firestore/get_data'; // Assuming you have a function for searching events.
 import { useAuthContext } from './AuthContext';

@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useRef  } from "react";
 import { Search } from '../icons/Search';
 import Link from "next/link";
