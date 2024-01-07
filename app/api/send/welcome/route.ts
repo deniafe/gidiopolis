@@ -2,7 +2,7 @@ import { WelcomeEmailTemplate } from '../../../../components/emails/WelcomeEmail
 import { Resend } from 'resend'
 import * as React from 'react'
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   const req = await request.json();
