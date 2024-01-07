@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const { name, email } = req;
 
   if (!email || !name) {
-    return Response.json({ message: 'Missing fields' }, { status: 400 });
+    return Response.json({ message: 'Missing fields' });
   }
 
   try {
