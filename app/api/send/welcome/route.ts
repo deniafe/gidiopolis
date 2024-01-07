@@ -9,9 +9,9 @@ export async function POST(request: Request) {
 
   const { name, email } = req;
 
-  if (!email || !name) {
-    return Response.json({ message: 'Missing fields' });
-  }
+  // if (!email || !name) {
+  //   return Response.json({ message: 'Missing fields' });
+  // }
 
   try {
     const data = await resend.emails.send({
