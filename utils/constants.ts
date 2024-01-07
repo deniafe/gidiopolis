@@ -1,3 +1,5 @@
+export const baseUrl = `https://gidiopolis.com/api`
+
 export const categories = [
   {
     title: 'Arts & Culture',
@@ -38,8 +40,6 @@ export const categories = [
 ];
 
 export const catexts = [  'Arts & Culture',  'Night Life', 'Music/Concert',  'Public Sector & Policy', 'Business & Economy',  'Religious', 'Kids',  'IT/Tech']
-
-
 
 export const company = [
   {

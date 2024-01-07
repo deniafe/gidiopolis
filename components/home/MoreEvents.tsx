@@ -10,7 +10,7 @@ interface MoreEventProps {
 const MoreEvent = ({firebaseEvents}: MoreEventProps) => {
 
   const handleButtonClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    console.log("Button clicked from parent component!");
+    console.log("Button clicked from parent component!")
     // Additional logic or state changes can be performed here
   };
 
@@ -18,8 +18,9 @@ const MoreEvent = ({firebaseEvents}: MoreEventProps) => {
     <section
       className="mb-24 md:mb-24 md:min-h-screen"
     >
+
        <h2 className="flex justify-center md:justify-start text-[1.75rem] text-black font-medium px-[2rem]">
-        More Events
+        More Events 
       </h2>
 
       <div className="grid grid-cols-1 gap-4 gap-y-12 md:grid-cols-2 lg:grid-cols-4 mt-12 md:mt-12 px-[2rem]">
@@ -37,6 +38,7 @@ const MoreEvent = ({firebaseEvents}: MoreEventProps) => {
       </div>
       
     </section>
+    
   )
 }
 

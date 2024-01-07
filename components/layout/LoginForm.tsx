@@ -31,7 +31,7 @@ const SignupForm = () => {
       return console.log(docError)
     }
 
-    successMessage("Authentication successful 🎉")
+    console.log(user.email, user.displayName)
 
     return closeModal()
   };

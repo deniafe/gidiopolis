@@ -10,6 +10,8 @@ import { db } from '../config';
 import { AdditionalInformation, UserData } from '@/utils/types';
 import { errorMessage } from '../error_message';
 import { successMessage } from '../success_message';
+import { baseUrl } from '@/utils/constants';
+import axios from 'axios';
 
 export const createUserDocumentFromAuth = async (
   userAuth: User,
@@ -38,6 +40,24 @@ export const createUserDocumentFromAuth = async (
       });
 
       user = userSnapshot as QueryDocumentSnapshot<UserData>
+
+      try {
+         // Assuming you have an API endpoint to send the data
+        const apiUrl = `${baseUrl}/send/welcome`
+
+        // Make a request using Axios
+        const response = await axios.post(apiUrl, {
+          name: displayName,
+          email,
+        });
+  
+        // Handle the response data as needed
+        console.log('Response:', response.data);
+      } catch(error) {
+        console.log(error)
+      }
+ 
+
       successMessage("Authentication successful 🎉")
 
     } catch (e) {
