@@ -51,6 +51,6 @@ export async function POST() {
 
   } catch (error) {
     console.log('There was an error sending the email', error)
-    return Response.json({ error });
+    return NextResponse.json({ error });
   }
 }
