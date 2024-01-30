@@ -1,4 +1,4 @@
-export const baseUrl = `https://gidiopolis.com/api`
+export const baseUrl = `http://localhost:3001/api`
 
 export const categories = [
   {

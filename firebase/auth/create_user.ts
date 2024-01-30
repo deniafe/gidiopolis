@@ -53,6 +53,7 @@ export const createUserDocumentFromAuth = async (
   
         // Handle the response data as needed
         console.log('Response:', response.data);
+        
       } catch(error) {
         console.log(error)
       }
