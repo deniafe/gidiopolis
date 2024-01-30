@@ -33,6 +33,7 @@
 import { WelcomeEmailTemplate } from '../../../../components/emails/WelcomeEmail'
 import { Resend } from 'resend'
 import * as React from 'react'
+import { NextResponse } from 'next/server';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -46,7 +47,7 @@ export async function POST() {
       react: WelcomeEmailTemplate({ name: 'Toyin', href: 'https://gidiopolis.com/' }) as React.ReactElement,
     });
 
-    return Response.json(data);
+    return NextResponse.json(data);
 
   } catch (error) {
     console.log('There was an error sending the email', error)
