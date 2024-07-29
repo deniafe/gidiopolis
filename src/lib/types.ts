@@ -1,5 +1,5 @@
-// import { Timestamp } from 'firebase/firestore';
-// import { DateRange } from 'react-day-picker';
+import { Timestamp } from 'firebase/firestore';
+import { DateRange } from 'react-day-picker';
 import * as z from 'zod';
 
 // Enums
@@ -39,11 +39,11 @@ export interface Organization {
   state: string;
 }
 
-// export interface EventDate {
-//   startDate: Timestamp;
-//   endDate: Timestamp;
-//   key: string;
-// }
+export interface EventDate {
+  startDate: Timestamp;
+  endDate: Timestamp;
+  key: string;
+}
 
 export interface EventAddress {
   state: string;
@@ -67,24 +67,24 @@ export interface EventLinks {
 }
 
 
-// export interface Event {
-//   id: string;
-//   organizationId: string;
-//   name: string;
-//   banner: string;
-//   category: string;
-//   price: string
-//   isFree: boolean
-//   date: DateRange;
-//   time: EventTime; 
-//   venue: EventAddress;
-//   description: string;
-//   slug: string;
-//   links: EventLinks
-//   isApproved: boolean;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }
+export interface Event {
+  id: string;
+  organizationId: string;
+  name: string;
+  banner: string;
+  category: string;
+  price: string
+  isFree: boolean
+  date: DateRange;
+  time: EventTime; 
+  venue: EventAddress;
+  description: string;
+  slug: string;
+  links: EventLinks
+  isApproved: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface Media {
   id: string;
