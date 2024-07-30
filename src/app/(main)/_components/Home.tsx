@@ -77,7 +77,7 @@ export const Home = () => {
       <Hero />
       <Category selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
       <h2 className="flex justify-center md:justify-start text-[1.75rem] font-medium px-[2rem] ">
-        Latest Events
+        Latest Event
       </h2>
       <EventList
         events={selectedCategory === 'All' ? events : categoryEvents}
